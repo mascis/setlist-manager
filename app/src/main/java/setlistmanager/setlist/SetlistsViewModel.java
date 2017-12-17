@@ -83,6 +83,5 @@ public class SetlistsViewModel extends ViewModel {
         });
 
     }
-    // clone
-    // remove
+
 }
