@@ -154,16 +154,13 @@ public class SetlistsActivity extends AppCompatActivity implements ConfirmDialog
         switch ( item.getItemId() ) {
 
             case R.id.edit:
-                Log.i(TAG, "Edit clicked on context menu");
                 setlistsNavigator.editSetlist(setlist.getId());
                 return true;
 
             case R.id.duplicate:
-                Log.i(TAG, "Duplicate clicked on context menu");
                 return true;
 
             case R.id.remove:
-                Log.i(TAG, "Remove clicked on context menu");
                 showConfirmDialog(setlist);
                 return true;
 
