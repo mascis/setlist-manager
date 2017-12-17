@@ -9,6 +9,10 @@ import setlistmanager.setlist.AddEditSetlistNavigator;
 import setlistmanager.setlist.AddEditSetlistViewModel;
 import setlistmanager.setlist.SetlistsNavigator;
 import setlistmanager.setlist.SetlistsViewModel;
+import setlistmanager.song.AddEditSongNavigator;
+import setlistmanager.song.AddEditSongViewModel;
+import setlistmanager.song.SongsNavigator;
+import setlistmanager.song.SongsViewModel;
 import setlistmanager.util.BaseNavigator;
 
 /**
@@ -40,6 +44,16 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
 
             AddEditSetlistNavigator addEditSetlistNavigator = new AddEditSetlistNavigator(baseNavigator);
             return (T) new AddEditSetlistViewModel( localDataSource, addEditSetlistNavigator, false );
+
+        } else if ( modelClass.isAssignableFrom(SongsViewModel.class) ) {
+
+            SongsNavigator songsNavigator = new SongsNavigator(baseNavigator);
+            return (T) new SongsViewModel( localDataSource, songsNavigator );
+
+        } else if ( modelClass.isAssignableFrom(AddEditSongViewModel.class) ) {
+
+            AddEditSongNavigator addEditSongNavigator = new AddEditSongNavigator(baseNavigator);
+            return (T) new AddEditSongViewModel( localDataSource, addEditSongNavigator, false );
 
         }
 

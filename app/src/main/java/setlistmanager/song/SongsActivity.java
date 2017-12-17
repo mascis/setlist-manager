@@ -1,8 +1,8 @@
-package setlistmanager.setlist;
+package setlistmanager.song;
 
 import android.app.DialogFragment;
 import android.arch.lifecycle.ViewModelProviders;
-import android.support.v4.app.FragmentActivity;
+import android.content.Intent;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -13,12 +13,12 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.EditText;
+
+import com.setlistmanager.R;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import io.reactivex.CompletableObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Action;
@@ -26,20 +26,18 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import setlistmanager.Injection;
 import setlistmanager.ViewModelFactory;
-import setlistmanager.data.Setlist;
+import setlistmanager.data.Song;
 import setlistmanager.util.ConfirmDialogFragment;
 
-import com.setlistmanager.R;
+public class SongsActivity extends AppCompatActivity implements ConfirmDialogFragment.ConfirmDialogListener {
 
-public class SetlistsActivity extends AppCompatActivity implements ConfirmDialogFragment.ConfirmDialogListener {
-
-    private static final String TAG = SetlistsActivity.class.getSimpleName();
+    private static final String TAG = SongsActivity.class.getSimpleName();
 
     private ViewModelFactory viewModelFactory;
 
-    private SetlistsViewModel setlistsViewModel;
+    private SongsViewModel songsViewModel;
 
-    private SetlistsNavigator setlistsNavigator;
+    private SongsNavigator songsNavigator;
 
     private final CompositeDisposable disposable = new CompositeDisposable();
 
@@ -49,36 +47,34 @@ public class SetlistsActivity extends AppCompatActivity implements ConfirmDialog
 
     private RecyclerView.LayoutManager layoutManager;
 
-    private List<Setlist> dataset;
+    private List<Song> dataset;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_setlists);
+        setContentView(R.layout.activity_songs);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
-        actionBar.setTitle(getResources().getString(R.string.setlists_title));
+        actionBar.setTitle(getResources().getString(R.string.songs_title));
 
         viewModelFactory = Injection.provideViewModelFactory(this, this);
-        setlistsViewModel = ViewModelProviders.of(this, viewModelFactory).get(SetlistsViewModel.class);
-        setlistsNavigator = setlistsViewModel.getSetlistsNavigator();
+        songsViewModel = ViewModelProviders.of(this, viewModelFactory).get(SongsViewModel.class);
+        songsNavigator = songsViewModel.getSongsNavigator();
 
         dataset = new ArrayList<>();
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         recyclerView.setHasFixedSize(true);
-        adapter = new SetlistRecyclerViewAdapter(this, dataset);
+        adapter = new SongRecyclerViewAdapter(this, dataset);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
-
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        getSetlists();
+        getSongs();
     }
 
     @Override
@@ -97,11 +93,11 @@ public class SetlistsActivity extends AppCompatActivity implements ConfirmDialog
 
             case R.id.nav_setlists:
                 Log.i(TAG, "Setlists clicked in nav menu");
+                songsNavigator.toSetlists();
                 return true;
 
             case R.id.nav_songs:
                 Log.i(TAG, "Songs clicked in nav menu");
-                setlistsNavigator.toSongs();
                 return true;
 
             case R.id.nav_settings:
@@ -111,7 +107,7 @@ public class SetlistsActivity extends AppCompatActivity implements ConfirmDialog
             case R.id.add:
                 Log.i(TAG, "Add button clicked");
 
-                setlistsNavigator.addSetlist();
+                songsNavigator.addSong();
 
                 return true;
 
@@ -128,7 +124,7 @@ public class SetlistsActivity extends AppCompatActivity implements ConfirmDialog
 
         try {
 
-            SetlistRecyclerViewAdapter adapter = (SetlistRecyclerViewAdapter)recyclerView.getAdapter();
+            SongRecyclerViewAdapter adapter = (SongRecyclerViewAdapter) recyclerView.getAdapter();
             position = adapter.getPosition();
 
         } catch (Exception e) {
@@ -150,20 +146,20 @@ public class SetlistsActivity extends AppCompatActivity implements ConfirmDialog
             return false;
         }
 
-        Setlist setlist = dataset.get(position);
+        Song song = dataset.get(position);
 
         switch ( item.getItemId() ) {
 
             case R.id.edit:
-                setlistsNavigator.editSetlist(setlist.getId());
+                songsNavigator.editSong(song.getId());
                 return true;
 
-            case R.id.duplicate:
-                duplicateSetlist(setlist);
+            case R.id.open:
+                Log.i(TAG, "Open clicked in context menu");
                 return true;
 
             case R.id.remove:
-                showConfirmDialog(setlist);
+                showConfirmDialog(song);
                 return true;
 
             default:
@@ -172,12 +168,12 @@ public class SetlistsActivity extends AppCompatActivity implements ConfirmDialog
 
     }
 
-    public void showConfirmDialog(Setlist setlist) {
+    public void showConfirmDialog(Song song) {
 
-        String title = getResources().getString(R.string.confirm_dialog_delete_setlist_title);
-        String question = getResources().getString(R.string.confirm_dialog_delete_setlist_message);
-        String setlistName = setlist.getName();
-        String message = question + " " + setlistName + "?";
+        String title = getResources().getString(R.string.confirm_dialog_delete_song_title);
+        String question = getResources().getString(R.string.confirm_dialog_delete_song_message);
+        String songTitle = song.getTitle();
+        String message = question + " " + songTitle + "?";
 
         DialogFragment confirmDialog = ConfirmDialogFragment.instance(title, message);
         confirmDialog.show(getFragmentManager(), "ConfirmDialog");
@@ -187,13 +183,13 @@ public class SetlistsActivity extends AppCompatActivity implements ConfirmDialog
     @Override
     public void onDialogPositiveClick(DialogFragment dialog) {
 
-        Setlist setlist;
+        Song song;
 
         try {
-            setlist = dataset.get(getAdapterPosition());
-            deleteSetlist(setlist.getId());
+            song = dataset.get(getAdapterPosition());
+            //deleteSong(song.getId());
         } catch (Exception e) {
-            Log.e(TAG, "Deleting setlist failed");
+            Log.e(TAG, "Deleting song failed");
         }
 
     }
@@ -205,73 +201,57 @@ public class SetlistsActivity extends AppCompatActivity implements ConfirmDialog
 
     }
 
-    private void getSetlists() {
-
-        disposable.add(setlistsViewModel.getSetlists()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<List<Setlist>>() {
-
-                    @Override
-                    public void accept(List<Setlist> setlists) throws Exception {
-
-                        dataset.clear();
-                        dataset.addAll(setlists);
-                        adapter.notifyDataSetChanged();
-
-                    }
-                }, new Consumer<Throwable>() {
-                    @Override
-                    public void accept(Throwable throwable) throws Exception {
-                        Log.e(TAG, "Unable to get setlists", throwable);
-                    }
-                }));
-
-    }
-
-    private void duplicateSetlist(Setlist setlist) {
+    private void getSongs() {
 
         disposable.add(
-                setlistsViewModel.duplicateSetlist(setlist)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new Action() {
-                            @Override
-                            public void run() throws Exception {
+                songsViewModel.getSongs()
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Consumer<List<Song>>() {
 
-                                Log.i(TAG, "Setlist duplicated successfully");
+                        @Override
+                        public void accept(List<Song> songs) throws Exception {
 
-                            }
-                        }, new Consumer<Throwable>() {
-                            @Override
-                            public void accept(Throwable throwable) throws Exception {
+                            dataset.clear();
+                            dataset.addAll(songs);
+                            adapter.notifyDataSetChanged();
 
-                                Log.e(TAG, "Error duplicating setlist");
+                        }
+                    }, new Consumer<Throwable>() {
 
-                            }
-                        })
+                        @Override
+                        public void accept(Throwable throwable) throws Exception {
+
+                            Log.e(TAG, "Unable to get songs", throwable);
+
+                        }
+
+                    })
         );
 
     }
 
-    private void deleteSetlist(String setlistId) {
+
+    private void deleteSong(String songId) {
 
         disposable.add(
-                setlistsViewModel.deleteSetlist(setlistId)
+                songsViewModel.deleteSong(songId)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(new Action() {
                             @Override
                             public void run() throws Exception {
 
-                                Log.i(TAG, "Setlist deleted successfully");
+                                Log.i(TAG, "Song deleted successfully");
 
                             }
                         }, new Consumer<Throwable>() {
+
                             @Override
                             public void accept(Throwable throwable) throws Exception {
-                                Log.e(TAG, "Error deleting setlist", throwable);
+                                Log.e(TAG, "Error deleting song", throwable);
                             }
+
                         })
         );
 
@@ -283,5 +263,4 @@ public class SetlistsActivity extends AppCompatActivity implements ConfirmDialog
 
         disposable.clear();
     }
-
 }

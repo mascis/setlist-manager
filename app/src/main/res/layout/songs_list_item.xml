@@ -10,22 +10,16 @@
     android:focusable="true">
 
     <TextView
-        android:id="@+id/setlists_list_item_name"
+        android:id="@+id/songs_list_item_title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1" />
 
-        <TextView
-            android:id="@+id/setlists_list_item_date"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
-
-        <TextView
-            android:id="@+id/setlists_list_item_location"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
+    <TextView
+        android:id="@+id/songs_list_item_artist"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1" />
 
 
 </LinearLayout>

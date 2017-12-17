@@ -19,7 +19,9 @@ public class AddEditSetlistNavigator {
     }
 
     void onCancel() {
-        navigationProvider.startActivityForResult(SetlistsActivity.class, 0);
+
+        navigationProvider.finishActivity();
+        //navigationProvider.startActivityForResult(SetlistsActivity.class, 0);
     }
 
 }

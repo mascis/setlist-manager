@@ -11,11 +11,19 @@
     <string name="context_menu_edit">Edit</string>
     <string name="context_menu_duplicate">Duplicate</string>
     <string name="context_menu_remove">Remove</string>
+    <string name="context_menu_open">Open</string>
 
     <string name="confirm_dialog_delete_setlist_title">Remove setlist</string>
     <string name="confirm_dialog_delete_setlist_message">Are you sure you want to remove setlist</string>
+    <string name="confirm_dialog_delete_song_title">Remove song</string>
+    <string name="confirm_dialog_delete_song_message">Are you sure you want to remove song</string>
 
     <string name="songs_title">Songs</string>
+    <string name="add_song_title">Add song</string>
+    <string name="edit_song_title">Edit song</string>
+    <string name="addedit_song_title_cannot_be_emtpy">Title cannot be empty</string>
+    <string name="song_title">Title</string>
+    <string name="song_artist">Artist</string>
 
     <string name="settings_title">Settings</string>
 

@@ -1,5 +1,6 @@
 package setlistmanager.setlist;
 
+import setlistmanager.song.SongsActivity;
 import setlistmanager.util.BaseNavigator;
 
 /**
@@ -20,6 +21,10 @@ public class SetlistsNavigator {
 
     void editSetlist(String id) {
         navigationProvider.startActivityForResultWithExtra(AddEditSetlistActivity.class, AddEditSetlistActivity.REQUEST_EDIT_SETLIST, "id", id);
+    }
+
+    void toSongs() {
+        navigationProvider.startActivityForResult(SongsActivity.class, 1);
     }
 
 }

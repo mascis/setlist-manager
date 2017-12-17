@@ -16,7 +16,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="setlistmanager.setlist.AddEditSetlistActivity"></activity>
+        <activity android:name="setlistmanager.setlist.AddEditSetlistActivity" />
+        <activity android:name="setlistmanager.song.SongsActivity" />
+        <activity android:name="setlistmanager.song.AddEditSongActivity"></activity>
     </application>
 
 </manifest>
