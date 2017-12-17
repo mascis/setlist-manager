@@ -1,0 +1,31 @@
+<resources>
+    <string name="app_name">Setlist Manager</string>
+
+    <string name="setlists_title">Setlists</string>
+    <string name="add_setlist_title">Add setlist</string>
+    <string name="edit_setlist_title">Edit setlist</string>
+    <string name="setlist_name">Name</string>
+    <string name="setlist_date">Date</string>
+    <string name="addedit_setlist_name_cannot_be_emtpy">Name cannot be empty</string>
+
+    <string name="context_menu_edit">Edit</string>
+    <string name="context_menu_duplicate">Duplicate</string>
+    <string name="context_menu_remove">Remove</string>
+
+    <string name="confirm_dialog_delete_setlist_title">Remove setlist</string>
+    <string name="confirm_dialog_delete_setlist_message">Are you sure you want to remove setlist</string>
+
+    <string name="songs_title">Songs</string>
+
+    <string name="settings_title">Settings</string>
+
+    <string name="button_save">Save</string>
+    <string name="button_OK">OK</string>
+    <string name="button_cancel">Cancel</string>
+
+    <string name="menu_item_add">Add</string>
+    <string name="menu_item_nav">MENU</string>
+    <string name="setlist_location">Location</string>
+
+
+</resources>
