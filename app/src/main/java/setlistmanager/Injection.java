@@ -16,7 +16,7 @@ public class Injection {
 
     public static LocalDataSource provideLocalDataSource(Context context ) {
         SetlistManagerDatabase setlistManagerDatabase = SetlistManagerDatabase.getInstance(context);
-        return LocalDataSource.getInstance(setlistManagerDatabase.setlistDao());
+        return LocalDataSource.getInstance(setlistManagerDatabase.setlistDao(), setlistManagerDatabase.songDao());
     }
 
     public static BaseNavigator provideNavigator(Activity activity) {

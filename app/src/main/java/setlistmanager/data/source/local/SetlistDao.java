@@ -6,6 +6,7 @@ import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Update;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.Flowable;
@@ -36,5 +37,8 @@ public interface SetlistDao {
 
     @Query("DELETE FROM setlists")
     void deleteSetlists();
+
+    @Query("SELECT songs FROM setlists WHERE setlistId = :setlistId")
+    Flowable<List<String>> getSetlistSongs(String setlistId);
 
 }

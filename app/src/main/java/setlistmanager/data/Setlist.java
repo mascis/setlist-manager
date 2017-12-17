@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -45,12 +46,12 @@ public class Setlist {
 
     @Nullable
     @ColumnInfo(name = "songs")
-    private ArrayList<String> songs;
+    private List<String> songs;
 
     @Ignore
     public Setlist(@NonNull String name, @Nullable String location,
                    @Nullable Date date, @NonNull Date createdAt, @NonNull Date modifiedAt,
-                   @Nullable ArrayList<String> songs) {
+                   @Nullable List<String> songs) {
 
         this.id = UUID.randomUUID().toString();
         this.name = name;
@@ -64,7 +65,7 @@ public class Setlist {
 
     public Setlist(@NonNull String id, @NonNull String name, @Nullable String location,
                    @Nullable Date date, @NonNull Date createdAt, @NonNull Date modifiedAt,
-                   @Nullable ArrayList<String> songs) {
+                   @Nullable List<String> songs) {
 
         this.id = id;
         this.name = name;
@@ -131,11 +132,11 @@ public class Setlist {
     }
 
     @Nullable
-    public ArrayList<String> getSongs() {
+    public List<String> getSongs() {
         return songs;
     }
 
-    public void setSongs(@Nullable ArrayList<String> songs) {
+    public void setSongs(@Nullable List<String> songs) {
         this.songs = songs;
     }
 
