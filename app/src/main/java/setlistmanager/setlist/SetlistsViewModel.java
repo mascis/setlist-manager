@@ -53,6 +53,24 @@ public class SetlistsViewModel extends ViewModel {
         return dataSource.getSetlists();
     }
 
+    public Completable duplicateSetlist(@NonNull final Setlist setlistToCopy) {
+
+        return Completable.fromAction(new Action() {
+            @Override
+            public void run() throws Exception {
+
+                String name = setlistToCopy.getName() + "(copy)";
+                Date now = new Date();
+
+                Setlist setlist = new Setlist(name, setlistToCopy.getLocation(), setlistToCopy.getDate(), now, now, setlistToCopy.getSongs());
+
+                dataSource.insertSetlist(setlist);
+
+            }
+        });
+
+    }
+
     public Completable deleteSetlist(@NonNull final String setlistId) {
 
         return Completable.fromAction(new Action() {

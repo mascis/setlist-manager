@@ -19,7 +19,7 @@ import setlistmanager.data.Setlist;
 @Dao
 public interface SetlistDao {
 
-    @Query("SELECT * FROM setlists")
+    @Query("SELECT * FROM setlists ORDER BY modifiedAt DESC")
     Flowable<List<Setlist>> getSetlists();
 
     @Query("SELECT * FROM setlists WHERE setlistId = :setlistId")

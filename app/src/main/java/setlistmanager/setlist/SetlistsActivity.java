@@ -158,6 +158,7 @@ public class SetlistsActivity extends AppCompatActivity implements ConfirmDialog
                 return true;
 
             case R.id.duplicate:
+                duplicateSetlist(setlist);
                 return true;
 
             case R.id.remove:
@@ -203,7 +204,7 @@ public class SetlistsActivity extends AppCompatActivity implements ConfirmDialog
 
     }
 
-    protected void getSetlists() {
+    private void getSetlists() {
 
         disposable.add(setlistsViewModel.getSetlists()
                 .subscribeOn(Schedulers.io())
@@ -227,7 +228,32 @@ public class SetlistsActivity extends AppCompatActivity implements ConfirmDialog
 
     }
 
-    protected void deleteSetlist(String setlistId) {
+    private void duplicateSetlist(Setlist setlist) {
+
+        disposable.add(
+                setlistsViewModel.duplicateSetlist(setlist)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Action() {
+                            @Override
+                            public void run() throws Exception {
+
+                                Log.i(TAG, "Setlist duplicated successfully");
+
+                            }
+                        }, new Consumer<Throwable>() {
+                            @Override
+                            public void accept(Throwable throwable) throws Exception {
+
+                                Log.e(TAG, "Error duplicating setlist");
+
+                            }
+                        })
+        );
+
+    }
+
+    private void deleteSetlist(String setlistId) {
 
         disposable.add(
                 setlistsViewModel.deleteSetlist(setlistId)
