@@ -15,13 +15,15 @@ public class AddEditSetlistNavigator {
     }
 
     void onSetlistSaved() {
-        navigationProvider.startActivityForResult(SetlistsActivity.class, 0);
+
+        //navigationProvider.startActivityForResult(SetlistsActivity.class, 0);
+        navigationProvider.finishActivity();
     }
 
     void onCancel() {
 
         navigationProvider.finishActivity();
-        //navigationProvider.startActivityForResult(SetlistsActivity.class, 0);
+
     }
 
 }

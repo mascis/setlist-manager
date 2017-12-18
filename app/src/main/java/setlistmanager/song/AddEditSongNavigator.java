@@ -16,7 +16,9 @@ public class AddEditSongNavigator {
     }
 
     void onSongSaved() {
-        navigationProvider.startActivityForResult(SongsActivity.class, 0);
+
+        navigationProvider.finishActivity();
+        //navigationProvider.startActivityForResult(SongsActivity.class, 0);
     }
 
     void onCancel() {

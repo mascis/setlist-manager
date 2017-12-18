@@ -81,6 +81,20 @@ public class AddEditSongActivity extends AppCompatActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setDisplayShowHomeEnabled(true);
 
+        songId = getIntent().getStringExtra("id");
+
+        if ( songId != null ) {
+
+            actionBar.setTitle(getResources().getString(R.string.edit_song_title));
+            addEditSongViewModel.setEditMode(true);
+            getSongById(songId);
+
+        } else {
+
+            actionBar.setTitle(getResources().getString(R.string.add_song_title));
+
+        }
+
         title = (EditText) findViewById(R.id.song_title);
         artist = (EditText) findViewById(R.id.song_artist);
         saveButton = (Button) findViewById(R.id.button_save);
@@ -101,32 +115,6 @@ public class AddEditSongActivity extends AppCompatActivity {
                 onCancelClicked();
             }
         });
-
-    }
-
-
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
-
-
-        Log.i(TAG, "onActivityResult");
-        Log.i(TAG, "requestCode: " + requestCode + ", resultCode: " + resultCode + ", data: " + data.getStringExtra("id"));
-
-        if ( requestCode == REQUEST_EDIT_SONG ) {
-
-            getActionBar().setTitle(getResources().getString(R.string.edit_song_title));
-
-            songId = data.getStringExtra("id");
-            addEditSongViewModel.setEditMode(true);
-            getSongById(songId);
-
-        } else {
-
-            getActionBar().setTitle(getResources().getString(R.string.add_song_title));
-
-        }
 
     }
 
@@ -165,7 +153,6 @@ public class AddEditSongActivity extends AppCompatActivity {
     }
 
     private void getSongById(String id) {
-
 
     }
 

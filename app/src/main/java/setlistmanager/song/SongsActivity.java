@@ -71,6 +71,8 @@ public class SongsActivity extends AppCompatActivity implements ConfirmDialogFra
         recyclerView.setAdapter(adapter);
     }
 
+
+
     @Override
     protected void onStart() {
         super.onStart();
