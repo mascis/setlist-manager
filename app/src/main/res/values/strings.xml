@@ -24,12 +24,14 @@
     <string name="addedit_song_title_cannot_be_emtpy">Title cannot be empty</string>
     <string name="song_title">Title</string>
     <string name="song_artist">Artist</string>
+    <string name="song_file">File</string>
 
     <string name="settings_title">Settings</string>
 
     <string name="button_save">Save</string>
     <string name="button_OK">OK</string>
     <string name="button_cancel">Cancel</string>
+    <string name="button_select_file">Select file</string>
 
     <string name="menu_item_add">Add</string>
     <string name="menu_item_nav">MENU</string>

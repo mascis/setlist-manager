@@ -1,35 +1,42 @@
 package setlistmanager.song;
 
+import android.app.Activity;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
+import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.View;
+import android.webkit.MimeTypeMap;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.setlistmanager.R;
 
-import java.util.Calendar;
-import java.util.Date;
+import org.w3c.dom.Text;
 
-import io.reactivex.SingleObserver;
-import io.reactivex.android.schedulers.AndroidSchedulers;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Action;
-import io.reactivex.functions.Consumer;
-import io.reactivex.schedulers.Schedulers;
 import setlistmanager.Injection;
 import setlistmanager.ViewModelFactory;
-import setlistmanager.data.Setlist;
 import setlistmanager.data.Song;
+import setlistmanager.util.FileUtil;
 
 public class AddEditSongActivity extends AppCompatActivity {
 
@@ -50,11 +57,9 @@ public class AddEditSongActivity extends AppCompatActivity {
 
     private EditText artist;
 
-    private EditText filepath;
+    private EditText uri;
 
-    private Button fileChooserButton;
-
-    private Button imageGalleryButton;
+    private Button selectFileButton;
 
     private Button saveButton;
 
@@ -99,6 +104,7 @@ public class AddEditSongActivity extends AppCompatActivity {
         artist = (EditText) findViewById(R.id.song_artist);
         saveButton = (Button) findViewById(R.id.button_save);
         cancelButton = (Button) findViewById(R.id.button_cancel);
+        selectFileButton = (Button) findViewById(R.id.button_select_file);
 
         snackbarFail = Snackbar.make(findViewById(R.id.addedit_song_layout), getResources().getText(R.string.addedit_song_title_cannot_be_emtpy), Snackbar.LENGTH_LONG);
 
@@ -116,6 +122,42 @@ public class AddEditSongActivity extends AppCompatActivity {
             }
         });
 
+        selectFileButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                performFileSearch();
+            }
+        });
+
+    }
+
+    public void performFileSearch() {
+
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+
+        intent.setType("*/*");
+
+        intent.putExtra(Intent.EXTRA_MIME_TYPES, FileUtil.getSuppportedMimeTypes());
+
+        startActivityForResult(intent, FileUtil.READ_REQUEST_CODE);
+
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent resultData) {
+
+        if ( requestCode == FileUtil.READ_REQUEST_CODE && resultCode == Activity.RESULT_OK ) {
+
+            Uri uri = null;
+
+            if (resultData != null) {
+
+                uri = resultData.getData();
+
+            }
+        }
     }
 
     @Override
@@ -123,6 +165,7 @@ public class AddEditSongActivity extends AppCompatActivity {
         onBackPressed();
         return true;
     }
+
 
     @Override
     protected void onStop() {
