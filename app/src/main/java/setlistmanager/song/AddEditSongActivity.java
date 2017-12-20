@@ -2,37 +2,29 @@ package setlistmanager.song;
 
 import android.app.Activity;
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.MediaStore;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
-import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import com.setlistmanager.R;
 
-import org.w3c.dom.Text;
+import java.util.Date;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-
+import io.reactivex.SingleObserver;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Action;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 import setlistmanager.Injection;
 import setlistmanager.ViewModelFactory;
 import setlistmanager.data.Song;
@@ -57,7 +49,9 @@ public class AddEditSongActivity extends AppCompatActivity {
 
     private EditText artist;
 
-    private EditText uri;
+    private EditText filepath;
+
+    private String songUri;
 
     private Button selectFileButton;
 
@@ -102,9 +96,10 @@ public class AddEditSongActivity extends AppCompatActivity {
 
         title = (EditText) findViewById(R.id.song_title);
         artist = (EditText) findViewById(R.id.song_artist);
+        filepath = (EditText) findViewById(R.id.song_file_path);
+        selectFileButton = (Button) findViewById(R.id.button_select_file);
         saveButton = (Button) findViewById(R.id.button_save);
         cancelButton = (Button) findViewById(R.id.button_cancel);
-        selectFileButton = (Button) findViewById(R.id.button_select_file);
 
         snackbarFail = Snackbar.make(findViewById(R.id.addedit_song_layout), getResources().getText(R.string.addedit_song_title_cannot_be_emtpy), Snackbar.LENGTH_LONG);
 
@@ -156,6 +151,11 @@ public class AddEditSongActivity extends AppCompatActivity {
 
                 uri = resultData.getData();
 
+                songUri = uri.toString();
+
+                String path = FileUtil.getPathFromUri(getApplicationContext(), uri);
+                filepath.setText(path);
+
             }
         }
     }
@@ -180,6 +180,7 @@ public class AddEditSongActivity extends AppCompatActivity {
     public void onSaveClicked() {
 
         String songTitle = title.getText().toString();
+        String songArtist = artist.getText().toString();
 
         if ( songTitle == null || songTitle.isEmpty() ) {
             Log.e(TAG, "Title cannot be empty");
@@ -188,18 +189,80 @@ public class AddEditSongActivity extends AppCompatActivity {
         }
 
         if ( addEditSongViewModel.isEditMode() ) {
-            saveSong();
+            saveSong(song, songTitle, songArtist, songUri);
         } else {
-            saveSong();
+            saveSong(null, songTitle, songArtist, songUri);
         }
 
     }
 
     private void getSongById(String id) {
 
+
+            addEditSongViewModel.getSongById(id)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new SingleObserver<Song>() {
+                        @Override
+                        public void onSubscribe(Disposable d) {
+
+                        }
+
+                        @Override
+                        public void onSuccess(Song _song) {
+
+                            song = _song;
+
+                            if ( song != null ) {
+
+                                title.setText(song.getTitle());
+
+                                if( song.getArtist() != null ) {
+                                    artist.setText(song.getArtist());
+                                }
+
+                                if( song.getUri() != null ) {
+                                    String path = FileUtil.getPathFromUri(getApplicationContext(), Uri.parse( _song.getUri()));
+                                    filepath.setText( path );
+                                }
+
+                            }
+
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+
+                            Log.e(TAG, "Error fetchin song", e);
+                        }
+                    });
+
+
     }
 
-    private void saveSong() {
+    private void saveSong(Song song, String title, String artist, String uri) {
+
+        disposable.add(
+                addEditSongViewModel.saveSong(song, title, artist, uri)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Action() {
+                            @Override
+                            public void run() throws Exception {
+
+                                Log.i(TAG, "Song saved successfully");
+                                addEditSongNavigator.onSongSaved();
+
+                            }
+                        }, new Consumer<Throwable>() {
+                            @Override
+                            public void accept(Throwable throwable) throws Exception {
+
+                                Log.e(TAG, "Error saving song", throwable);
+
+                            }
+                        })
+        );
 
     }
 

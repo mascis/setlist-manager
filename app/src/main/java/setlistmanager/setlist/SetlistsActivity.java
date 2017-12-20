@@ -2,8 +2,13 @@ package setlistmanager.setlist;
 
 import android.app.DialogFragment;
 import android.arch.lifecycle.ViewModelProviders;
+import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -13,10 +18,17 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ListView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import io.reactivex.CompletableObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -45,11 +57,19 @@ public class SetlistsActivity extends AppCompatActivity implements ConfirmDialog
 
     private RecyclerView recyclerView;
 
+    private FloatingActionButton floatingActionButton;
+
     private RecyclerView.Adapter adapter;
 
     private RecyclerView.LayoutManager layoutManager;
 
     private List<Setlist> dataset;
+
+    private DrawerLayout drawerLayout;
+
+    private NavigationView navigationView;
+
+    private ActionBarDrawerToggle drawerToggle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,9 +82,48 @@ public class SetlistsActivity extends AppCompatActivity implements ConfirmDialog
         ActionBar actionBar = getSupportActionBar();
         actionBar.setTitle(getResources().getString(R.string.setlists_title));
 
+        actionBar.setHomeButtonEnabled(true);
+        actionBar.setDisplayHomeAsUpEnabled(true);
+
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+
+        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.drawer_open, R.string.drawer_close) {
+
+            public void onDrawerClosed(View view) {
+                super.onDrawerClosed(view);
+                invalidateOptionsMenu();
+            }
+
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+                invalidateOptionsMenu();
+            }
+        };
+
+        drawerLayout.addDrawerListener(drawerToggle);
+
+        navigationView = (NavigationView) findViewById(R.id.navigation);
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+
+                selectDrawerItem(item);
+                return true;
+            }
+        });
+
+
         viewModelFactory = Injection.provideViewModelFactory(this, this);
         setlistsViewModel = ViewModelProviders.of(this, viewModelFactory).get(SetlistsViewModel.class);
         setlistsNavigator = setlistsViewModel.getSetlistsNavigator();
+
+        floatingActionButton = (FloatingActionButton) findViewById(R.id.fab_add);
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setlistsNavigator.addSetlist();
+            }
+        });
 
         dataset = new ArrayList<>();
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
@@ -72,7 +131,12 @@ public class SetlistsActivity extends AppCompatActivity implements ConfirmDialog
         adapter = new SetlistRecyclerViewAdapter(this, dataset);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
+    }
 
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        drawerToggle.syncState();
     }
 
     @Override
@@ -82,18 +146,14 @@ public class SetlistsActivity extends AppCompatActivity implements ConfirmDialog
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_nav_add, menu);
-        return true;
+    public boolean onPrepareOptionsMenu(Menu menu) {
+
+        return super.onPrepareOptionsMenu(menu);
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    private boolean selectDrawerItem(MenuItem item) {
+
         switch (item.getItemId()) {
-            case R.id.nav:
-                Log.i(TAG, "Nav button clicked");
-                return true;
 
             case R.id.nav_setlists:
                 Log.i(TAG, "Setlists clicked in nav menu");
@@ -108,18 +168,30 @@ public class SetlistsActivity extends AppCompatActivity implements ConfirmDialog
                 Log.i(TAG, "Settings clicked in nav menu");
                 return true;
 
-            case R.id.add:
-                Log.i(TAG, "Add button clicked");
-
-                setlistsNavigator.addSetlist();
-
+            default:
                 return true;
 
-            default:
-                // If we got here, the user's action was not recognized.
-                // Invoke the superclass to handle it.
-                return super.onOptionsItemSelected(item);
         }
+    }
+
+    /*
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_nav_add, menu);
+        return true;
+    }
+    */
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        if ( drawerToggle.onOptionsItemSelected(item)){
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+
     }
 
     private int getAdapterPosition() {
@@ -140,6 +212,8 @@ public class SetlistsActivity extends AppCompatActivity implements ConfirmDialog
 
         return position;
     }
+
+
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {

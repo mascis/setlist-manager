@@ -23,6 +23,9 @@ public interface SongDao {
     @Query("SELECT * FROM songs")
     Flowable<List<Song>> getSongs();
 
+    @Query("SELECT * FROM songs WHERE songId IN (:songIds)")
+    Flowable<List<Song>> getSongsById(List<String> songIds);
+
     @Query("SELECT * FROM songs WHERE songId = :songId")
     Single<Song> getSongById(String songId);
 

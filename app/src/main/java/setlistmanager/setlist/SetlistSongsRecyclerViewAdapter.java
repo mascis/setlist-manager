@@ -2,49 +2,42 @@ package setlistmanager.setlist;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.setlistmanager.R;
 
-import java.text.DateFormat;
 import java.util.List;
 
-import setlistmanager.Injection;
-import setlistmanager.data.Setlist;
+import setlistmanager.data.Song;
 
 
 /**
  * Created by User on 15.12.2017.
  */
 
-public class SetlistRecyclerViewAdapter extends RecyclerView.Adapter<SetlistRecyclerViewAdapter.ViewHolder> {
+public class SetlistSongsRecyclerViewAdapter extends RecyclerView.Adapter<SetlistSongsRecyclerViewAdapter.ViewHolder> {
 
-    private static final String TAG = SetlistRecyclerViewAdapter.class.getSimpleName();
+    private static final String TAG = SetlistSongsRecyclerViewAdapter.class.getSimpleName();
 
-    private List<Setlist> dataset;
+    private List<Song> dataset;
     private Context context;
     private int position;
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
 
-        public TextView name;
-        public TextView date;
-        public TextView location;
+        public TextView title;
+        public TextView artist;
 
         public ViewHolder(View view) {
             super(view);
-            this.name = (TextView) view.findViewById(R.id.setlists_list_item_name);
-            this.date = (TextView) view.findViewById(R.id.setlists_list_item_date);
-            this.location = (TextView) view.findViewById(R.id.setlists_list_item_location);
+            this.title = (TextView) view.findViewById(R.id.songs_list_item_title);
+            this.artist = (TextView) view.findViewById(R.id.songs_list_item_artist);
             view.setOnCreateContextMenuListener(this);
-
         }
 
         @Override
@@ -52,14 +45,12 @@ public class SetlistRecyclerViewAdapter extends RecyclerView.Adapter<SetlistRecy
 
             // groupId, itemId, order, titleRes
             contextMenu.add(Menu.NONE, R.id.edit, Menu.NONE, R.string.context_menu_edit);
-            contextMenu.add(Menu.NONE, R.id.duplicate, Menu.NONE, R.string.context_menu_duplicate);
             contextMenu.add(Menu.NONE, R.id.remove, Menu.NONE, R.string.context_menu_remove);
 
         }
-
     }
 
-    public SetlistRecyclerViewAdapter(Context context, List<Setlist> dataset) {
+    public SetlistSongsRecyclerViewAdapter(Context context, List<Song> dataset) {
 
         this.context = context;
         this.dataset = dataset;
@@ -70,10 +61,12 @@ public class SetlistRecyclerViewAdapter extends RecyclerView.Adapter<SetlistRecy
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
         View textView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.setlists_list_item, parent, false);
+                .inflate(R.layout.songs_list_item, parent, false);
 
         return new ViewHolder(textView);
     }
+
+
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
@@ -88,14 +81,13 @@ public class SetlistRecyclerViewAdapter extends RecyclerView.Adapter<SetlistRecy
 
         if ( dataset != null || !dataset.isEmpty() ) {
 
-            Setlist setlist = dataset.get(position);
-            String name = setlist.getName();
+            Song song = dataset.get(position);
+            String title = song.getTitle();
+            String artist = song.getArtist() == null ? "" : song.getArtist();
 
-            String date = setlist.getDate() == null ? "" : setlist.getDate().toString();
-            String location = setlist.getLocation() == null ? "" : setlist.getLocation();
-            holder.name.setText(name);
-            holder.date.setText(date);
-            holder.location.setText(location);
+            holder.title.setText(title);
+            holder.artist.setText(artist);
+
         }
     }
 

@@ -70,7 +70,7 @@
                 android:layout_height="match_parent">
 
                 <EditText
-                    android:id="@+id/selected_file_path"
+                    android:id="@+id/song_file_path"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"

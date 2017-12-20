@@ -87,6 +87,11 @@ public class LocalDataSource implements DataSource {
     }
 
     @Override
+    public Flowable<List<Song>> getSongsById(List<String> songIds) {
+        return songDao.getSongsById(songIds);
+    }
+
+    @Override
     public Single<Song> getSongById(String songId) {
         return songDao.getSongById(songId);
     }

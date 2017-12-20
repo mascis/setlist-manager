@@ -176,8 +176,6 @@ public final class FileUtil {
             return false;
         }
 
-        Log.i(TAG, "endsWith pdf: " + uri.toString().endsWith("pdf"));
-
         if ( uri.toString().endsWith("pdf") ) {
             return true;
         }
@@ -191,9 +189,7 @@ public final class FileUtil {
         if ( uri == null ) {
             return false;
         }
-
-        Log.i(TAG, "endsWith txt: " + uri.toString().endsWith("txt"));
-
+        
         if ( uri.toString().endsWith("txt") ) {
             return true;
         }

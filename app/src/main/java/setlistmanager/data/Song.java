@@ -2,11 +2,13 @@ package setlistmanager.data;
 
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import java.util.Date;
+import java.util.UUID;
 
 /**
  * Created by User on 17.12.2017.
@@ -29,8 +31,8 @@ public class Song {
     String artist;
 
     @Nullable
-    @ColumnInfo(name = "filepath")
-    String filepath;
+    @ColumnInfo(name = "uri")
+    String uri;
 
     @NonNull
     @ColumnInfo(name = "createdAt")
@@ -40,11 +42,21 @@ public class Song {
     @ColumnInfo(name = "modifiedAt")
     Date modifiedAt;
 
-    public Song(@NonNull String id, @NonNull String title, String artist, String filepath, @NonNull Date createdAt, @NonNull Date modifiedAt) {
+    @Ignore
+    public Song(@NonNull String title, String artist, String uri, @NonNull Date createdAt, @NonNull Date modifiedAt) {
+        this.id = UUID.randomUUID().toString();
+        this.title = title;
+        this.artist = artist;
+        this.uri = uri;
+        this.createdAt = createdAt;
+        this.modifiedAt = modifiedAt;
+    }
+
+    public Song(@NonNull String id, @NonNull String title, String artist, String uri, @NonNull Date createdAt, @NonNull Date modifiedAt) {
         this.id = id;
         this.title = title;
         this.artist = artist;
-        this.filepath = filepath;
+        this.uri = uri;
         this.createdAt = createdAt;
         this.modifiedAt = modifiedAt;
     }
@@ -77,12 +89,12 @@ public class Song {
     }
 
     @Nullable
-    public String getFilepath() {
-        return filepath;
+    public String getUri() {
+        return uri;
     }
 
-    public void setFilepath(@Nullable String filepath) {
-        this.filepath = filepath;
+    public void setUri(@Nullable String uri) {
+        this.uri = uri;
     }
 
     @NonNull

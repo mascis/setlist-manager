@@ -1,5 +1,9 @@
 package setlistmanager.setlist;
 
+import android.app.Activity;
+
+import java.util.Map;
+
 import setlistmanager.song.SongsActivity;
 import setlistmanager.util.BaseNavigator;
 
@@ -25,6 +29,10 @@ public class SetlistsNavigator {
 
     void toSongs() {
         navigationProvider.startActivityForResult(SongsActivity.class, 1);
+    }
+
+    void toSetlistSongs(Map<String, String> extras) {
+        navigationProvider.startActivityForResultWithExtrasBundle(SetlistSongsActivity.class, Activity.RESULT_OK, extras);
     }
 
 }

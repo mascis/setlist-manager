@@ -37,5 +37,8 @@
     <string name="menu_item_nav">MENU</string>
     <string name="setlist_location">Location</string>
 
+    <string name="drawer_open">Menu</string>
+    <string name="drawer_close">Close</string>
+
 
 </resources>

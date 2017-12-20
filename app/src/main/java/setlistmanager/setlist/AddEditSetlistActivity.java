@@ -170,11 +170,11 @@ public class AddEditSetlistActivity extends AppCompatActivity {
                         if ( !setlist.equals(null) ) {
                             setlistName.setText(setlist.getName());
 
-                            if ( !setlist.getLocation().equals(null) ) {
+                            if ( setlist.getLocation() != null ) {
                                 setlistLocation.setText(setlist.getLocation());
                             }
 
-                            if ( !setlist.getDate().equals(null) ) {
+                            if ( setlist.getDate() != null ) {
 
                                 Calendar c = Calendar.getInstance();
                                 c.setTime(setlist.getDate());

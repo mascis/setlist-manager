@@ -44,35 +44,33 @@ public class AddEditSongViewModel extends ViewModel {
         isEditMode = editMode;
     }
 
-    public Completable saveSong() {
+    public Completable saveSong(@Nullable final Song song, @NonNull final String title, @Nullable final String artist, @Nullable final String uri) {
 
-        /*
         return Completable.fromAction(new Action() {
             @Override
             public void run() throws Exception {
 
                 Date now = new Date();
 
-                if ( _setlist == null ) {
+                if ( song == null ) {
 
-                    Setlist setlist = new Setlist(setlistName, location, date, now, now, null);
-                    dataSource.insertSetlist(setlist);
+                    Song song = new Song(title, artist, uri, now, now);
+                    dataSource.insertSong(song);
 
                 } else {
 
-                    _setlist.setName(setlistName);
-                    _setlist.setLocation(location);
-                    _setlist.setDate(date);
-                    _setlist.setModifiedAt(now);
+                   song.setTitle(title);
+                   song.setArtist(artist);
+                   song.setUri(uri);
+                   song.setModifiedAt(now);
 
-                    dataSource.updateSetlist(_setlist);
+                   dataSource.updateSong(song);
 
                 }
 
             }
         });
-        */
-        return null;
+
     }
 
     public Single<Song> getSongById(@NonNull final String songId) {
