@@ -3,15 +3,14 @@ package setlistmanager.setlist;
 import android.arch.lifecycle.ViewModel;
 import android.support.annotation.NonNull;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
 import io.reactivex.Single;
-import io.reactivex.functions.Action;
 import setlistmanager.data.Song;
 import setlistmanager.data.source.local.LocalDataSource;
-import setlistmanager.song.SongsNavigator;
 
 /**
  * Created by User on 17.12.2017.
@@ -43,7 +42,27 @@ public class SetlistSongsViewModel extends ViewModel {
 
     public Flowable<List<Song>> getSetlistSongsById(@NonNull final List<String> songIds) {
 
-        return localDataSource.getSongsById(songIds);
+        List<String> list = new ArrayList<>();
+
+        for(int i = 0; i < songIds.size(); i++ ) {
+            list.add(songIds.get(i).substring(2, songIds.get(i).length() - 2));
+        }
+
+        return localDataSource.getSongsById(list);
+
+    }
+
+    private String[] toArray(List<String> songIds) {
+
+        String[] array = new String[songIds.size()];
+
+        for( int i = 0; i < songIds.size(); i++ ) {
+
+            array[i] = songIds.get(i);
+
+        }
+
+        return array;
 
     }
 

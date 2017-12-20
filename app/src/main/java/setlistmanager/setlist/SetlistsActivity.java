@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import io.reactivex.CompletableObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -43,7 +44,7 @@ import setlistmanager.util.ConfirmDialogFragment;
 
 import com.setlistmanager.R;
 
-public class SetlistsActivity extends AppCompatActivity implements ConfirmDialogFragment.ConfirmDialogListener {
+public class SetlistsActivity extends AppCompatActivity implements ConfirmDialogFragment.ConfirmDialogListener, SetlistRecyclerViewAdapter.ItemClickListener {
 
     private static final String TAG = SetlistsActivity.class.getSimpleName();
 
@@ -131,7 +132,10 @@ public class SetlistsActivity extends AppCompatActivity implements ConfirmDialog
         adapter = new SetlistRecyclerViewAdapter(this, dataset);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
+
     }
+
+
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
@@ -213,7 +217,23 @@ public class SetlistsActivity extends AppCompatActivity implements ConfirmDialog
         return position;
     }
 
+    @Override
+    public void onItemClick(int position) {
 
+        Setlist setlist = dataset.get(position);
+
+        if ( setlist != null ) {
+
+            Map<String, String> extras = new HashMap<>();
+
+            extras.put(SetlistSongsActivity.SETLIST_ID, setlist.getId());
+            extras.put(SetlistSongsActivity.SETLIST_NAME, setlist.getName());
+
+            setlistsNavigator.toSetlistSongs(extras);
+
+        }
+
+    }
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {

@@ -28,6 +28,11 @@ public class SetlistRecyclerViewAdapter extends RecyclerView.Adapter<SetlistRecy
 
     private static final String TAG = SetlistRecyclerViewAdapter.class.getSimpleName();
 
+    public interface ItemClickListener {
+        public void onItemClick(int position);
+    }
+
+    private static ItemClickListener itemClickListener;
     private List<Setlist> dataset;
     private Context context;
     private int position;
@@ -44,7 +49,6 @@ public class SetlistRecyclerViewAdapter extends RecyclerView.Adapter<SetlistRecy
             this.date = (TextView) view.findViewById(R.id.setlists_list_item_date);
             this.location = (TextView) view.findViewById(R.id.setlists_list_item_location);
             view.setOnCreateContextMenuListener(this);
-
         }
 
         @Override
@@ -69,6 +73,8 @@ public class SetlistRecyclerViewAdapter extends RecyclerView.Adapter<SetlistRecy
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
+        itemClickListener = (ItemClickListener) parent.getContext();
+
         View textView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.setlists_list_item, parent, false);
 
@@ -77,6 +83,13 @@ public class SetlistRecyclerViewAdapter extends RecyclerView.Adapter<SetlistRecy
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                itemClickListener.onItemClick(holder.getLayoutPosition());
+            }
+        });
 
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -112,6 +125,7 @@ public class SetlistRecyclerViewAdapter extends RecyclerView.Adapter<SetlistRecy
 
     @Override
     public void onViewRecycled(ViewHolder holder) {
+        holder.itemView.setOnClickListener(null);
         holder.itemView.setOnLongClickListener(null);
         super.onViewRecycled(holder);
     }

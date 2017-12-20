@@ -7,6 +7,8 @@ import android.support.annotation.NonNull;
 import setlistmanager.data.source.local.LocalDataSource;
 import setlistmanager.setlist.AddEditSetlistNavigator;
 import setlistmanager.setlist.AddEditSetlistViewModel;
+import setlistmanager.setlist.AddSongsToSetlistNavigator;
+import setlistmanager.setlist.AddSongsToSetlistViewModel;
 import setlistmanager.setlist.SetlistSongsNavigator;
 import setlistmanager.setlist.SetlistSongsViewModel;
 import setlistmanager.setlist.SetlistsNavigator;
@@ -61,6 +63,11 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
 
             SetlistSongsNavigator setlistSongsNavigator = new SetlistSongsNavigator(baseNavigator);
             return (T) new SetlistSongsViewModel( localDataSource, setlistSongsNavigator );
+
+        } else if ( modelClass.isAssignableFrom(AddSongsToSetlistViewModel.class) ) {
+
+            AddSongsToSetlistNavigator addSongsToSetlistNavigator = new AddSongsToSetlistNavigator(baseNavigator);
+            return (T) new AddSongsToSetlistViewModel( localDataSource, addSongsToSetlistNavigator );
 
         }
 

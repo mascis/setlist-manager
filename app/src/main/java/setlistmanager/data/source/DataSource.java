@@ -32,6 +32,8 @@ public interface DataSource {
 
     Flowable<List<Song>> getSongs();
 
+    Flowable<List<Song>> getAvailableSongs(List<String> songIds);
+
     Flowable<List<Song>> getSongsById(List<String> songIds);
 
     Single<Song> getSongById(String songId);

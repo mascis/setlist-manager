@@ -2,6 +2,8 @@ package setlistmanager.setlist;
 
 import android.app.DialogFragment;
 import android.arch.lifecycle.ViewModelProviders;
+import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -12,14 +14,18 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.setlistmanager.R;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import setlistmanager.Injection;
@@ -30,6 +36,9 @@ import setlistmanager.util.ConfirmDialogFragment;
 public class SetlistSongsActivity extends AppCompatActivity implements ConfirmDialogFragment.ConfirmDialogListener{
 
     private final String TAG = SetlistSongsActivity.class.getSimpleName();
+
+    public static final String SETLIST_ID = "setlistId";
+    public static final String SETLIST_NAME = "setlistName";
 
     private ViewModelFactory viewModelFactory;
 
@@ -49,27 +58,12 @@ public class SetlistSongsActivity extends AppCompatActivity implements ConfirmDi
 
     String setlistId;
 
+    private FloatingActionButton floatingActionButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setlist_songs);
-
-        Bundle extras = getIntent().getExtras();
-        setlistId = extras.getString("setlistId");
-        String setlistName = extras.getString("setlistName");
-
-        if ( setlistId != null ) {
-            getSetlistSongs(setlistId);
-        }
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        ActionBar actionBar = getSupportActionBar();
-        if ( setlistName != null ) {
-            actionBar.setTitle(setlistName);
-        } else {
-            actionBar.setTitle("Setlist songs");
-        }
 
         viewModelFactory = Injection.provideViewModelFactory(this, this);
         setlistSongsViewModel = ViewModelProviders.of(this, viewModelFactory).get(SetlistSongsViewModel.class);
@@ -82,13 +76,51 @@ public class SetlistSongsActivity extends AppCompatActivity implements ConfirmDi
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
 
+        Bundle extras = getIntent().getExtras();
+        setlistId = extras.getString(SETLIST_ID);
+        String setlistName = extras.getString(SETLIST_NAME);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        if ( setlistName != null ) {
+            actionBar.setTitle(setlistName);
+        } else {
+            actionBar.setTitle("Setlist songs");
+        }
+
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setHomeButtonEnabled(true);
+
+        floatingActionButton = (FloatingActionButton) findViewById(R.id.fab_add);
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setlistSongsNavigator.addSongsToSetlist(setlistId);
+            }
+        });
+
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-
+        getSetlistSongs(setlistId);
     }
+
+    /*
+    @Override
+    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        getSetlistSongsById(songIds);
+    }
+    */
 
     /*
 
@@ -99,41 +131,6 @@ public class SetlistSongsActivity extends AppCompatActivity implements ConfirmDi
         return true;
     }
     */
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.nav:
-                Log.i(TAG, "Nav button clicked");
-                return true;
-
-            case R.id.nav_setlists:
-                Log.i(TAG, "Setlists clicked in nav menu");
-                setlistSongsNavigator.toSetlists();
-                return true;
-
-            case R.id.nav_songs:
-                Log.i(TAG, "Songs clicked in nav menu");
-                setlistSongsNavigator.toSetlists();
-                return true;
-
-            case R.id.nav_settings:
-                Log.i(TAG, "Settings clicked in nav menu");
-                return true;
-
-            case R.id.add:
-                Log.i(TAG, "Add button clicked");
-
-                setlistSongsNavigator.addSongsToSetlist();
-
-                return true;
-
-            default:
-                // If we got here, the user's action was not recognized.
-                // Invoke the superclass to handle it.
-                return super.onOptionsItemSelected(item);
-        }
-    }
 
     private int getAdapterPosition() {
 
@@ -172,7 +169,6 @@ public class SetlistSongsActivity extends AppCompatActivity implements ConfirmDi
                 return true;
 
             case R.id.open:
-                Log.i(TAG, "Open clicked in context menu");
                 return true;
 
             case R.id.remove:
@@ -237,9 +233,6 @@ public class SetlistSongsActivity extends AppCompatActivity implements ConfirmDi
 
                                 if ( songs != null ) {
                                     getSetlistSongsById(songs);
-                                } else {
-                                    dataset.clear();
-                                    adapter.notifyDataSetChanged();
                                 }
 
                             }

@@ -22,7 +22,8 @@
         <activity android:name="setlistmanager.setlist.AddEditSetlistActivity" />
         <activity android:name="setlistmanager.song.SongsActivity" />
         <activity android:name="setlistmanager.song.AddEditSongActivity" />
-        <activity android:name="setlistmanager.setlist.SetlistSongsActivity"></activity>
+        <activity android:name="setlistmanager.setlist.SetlistSongsActivity" />
+        <activity android:name="setlistmanager.setlist.AddSongsToSetlistActivity"></activity>
     </application>
 
 </manifest>
