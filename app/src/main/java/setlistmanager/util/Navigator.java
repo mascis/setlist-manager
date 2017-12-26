@@ -88,4 +88,17 @@ public class Navigator implements BaseNavigator {
         }
 
     }
+
+    @Override
+    public void startActivityForResultWithBundle(Class clazz, int requestcode, Bundle bundle) {
+
+        if ( activity.get() != null ) {
+
+            Intent intent = new Intent(activity.get(), clazz);
+            intent.putExtras(bundle);
+            activity.get().startActivityForResult(intent, requestcode);
+
+        }
+
+    }
 }

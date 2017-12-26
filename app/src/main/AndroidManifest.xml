@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.setlistmanager">
-
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.setlistmanager">
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
@@ -23,7 +20,8 @@
         <activity android:name="setlistmanager.song.SongsActivity" />
         <activity android:name="setlistmanager.song.AddEditSongActivity" />
         <activity android:name="setlistmanager.setlist.SetlistSongsActivity" />
-        <activity android:name="setlistmanager.setlist.AddSongsToSetlistActivity"></activity>
+        <activity android:name="setlistmanager.setlist.AddSongsToSetlistActivity" />
+        <activity android:name="setlistmanager.screenslide.ScreenSlideActivity"></activity>
     </application>
 
 </manifest>

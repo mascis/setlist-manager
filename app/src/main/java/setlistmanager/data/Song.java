@@ -7,6 +7,7 @@ import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.UUID;
 
@@ -15,7 +16,7 @@ import java.util.UUID;
  */
 
 @Entity(tableName = "songs")
-public class Song {
+public class Song implements Serializable {
 
     @PrimaryKey
     @NonNull

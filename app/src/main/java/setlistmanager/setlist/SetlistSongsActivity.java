@@ -16,11 +16,21 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.setlistmanager.R;
 
+import java.io.Serializable;
+import java.lang.reflect.Array;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
+import io.reactivex.Flowable;
 import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -31,9 +41,11 @@ import io.reactivex.schedulers.Schedulers;
 import setlistmanager.Injection;
 import setlistmanager.ViewModelFactory;
 import setlistmanager.data.Song;
+import setlistmanager.data.source.local.Converters;
+import setlistmanager.screenslide.ScreenSlideActivity;
 import setlistmanager.util.ConfirmDialogFragment;
 
-public class SetlistSongsActivity extends AppCompatActivity implements ConfirmDialogFragment.ConfirmDialogListener{
+public class SetlistSongsActivity extends AppCompatActivity implements ConfirmDialogFragment.ConfirmDialogListener, SetlistSongsRecyclerViewAdapter.ItemClickListener {
 
     private final String TAG = SetlistSongsActivity.class.getSimpleName();
 
@@ -78,7 +90,7 @@ public class SetlistSongsActivity extends AppCompatActivity implements ConfirmDi
 
         Bundle extras = getIntent().getExtras();
         setlistId = extras.getString(SETLIST_ID);
-        String setlistName = extras.getString(SETLIST_NAME);
+        final String setlistName = extras.getString(SETLIST_NAME);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -96,7 +108,12 @@ public class SetlistSongsActivity extends AppCompatActivity implements ConfirmDi
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                setlistSongsNavigator.addSongsToSetlist(setlistId);
+
+                Map<String, String> extras = new HashMap<>();
+                extras.put(AddSongsToSetlistActivity.SETLIST_ID, setlistId);
+                extras.put(AddSongsToSetlistActivity.SETLIST_NAME, setlistName);
+
+                setlistSongsNavigator.addSongsToSetlist(extras);
             }
         });
 
@@ -113,24 +130,6 @@ public class SetlistSongsActivity extends AppCompatActivity implements ConfirmDi
         super.onStart();
         getSetlistSongs(setlistId);
     }
-
-    /*
-    @Override
-    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-        getSetlistSongsById(songIds);
-    }
-    */
-
-    /*
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_nav_add, menu);
-        return true;
-    }
-    */
 
     private int getAdapterPosition() {
 
@@ -149,6 +148,20 @@ public class SetlistSongsActivity extends AppCompatActivity implements ConfirmDi
         }
 
         return position;
+
+    }
+
+    @Override
+    public void onItemClick(int position) {
+
+        Bundle bundle = new Bundle();
+
+        bundle.putString(ScreenSlideActivity.EXTRA_START_POSITION, String.valueOf(position));
+        bundle.putString(ScreenSlideActivity.EXTRA_NUM_PAGES, String.valueOf(dataset.size()));
+        bundle.putSerializable(ScreenSlideActivity.EXTRA_NUM_ITEMS, (Serializable) dataset);
+
+        setlistSongsNavigator.toScreenSlider(bundle);
+
     }
 
     @Override
@@ -231,8 +244,42 @@ public class SetlistSongsActivity extends AppCompatActivity implements ConfirmDi
                             @Override
                             public void accept(List<String> songs) throws Exception {
 
-                                if ( songs != null ) {
-                                    getSetlistSongsById(songs);
+                                if ( songs.get(0) != null ) {
+                                    List<String> songIds = Converters.listfromString(songs.get(0));
+                                    getSetlistSongsById(songIds);
+                                }
+
+                            }
+
+                        }, new Consumer<Throwable>() {
+
+                            @Override
+                            public void accept(Throwable throwable) throws Exception {
+
+                                Log.e(TAG, "Unable to get songs", throwable);
+
+                            }
+
+                        })
+        );
+
+    }
+
+    private void getSetlistSongsById(final List<String> songIds) {
+
+        disposable.add(
+                setlistSongsViewModel.getSetlistSongsById(songIds)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Consumer<List<Song>>() {
+
+                            @Override
+                            public void accept(List<Song> songs) throws Exception {
+
+                                if ( songs != null && !songs.isEmpty() ) {
+                                    dataset.clear();
+                                    dataset.addAll(songs);
+                                    adapter.notifyDataSetChanged();
                                 }
 
                             }
@@ -248,35 +295,9 @@ public class SetlistSongsActivity extends AppCompatActivity implements ConfirmDi
                         })
         );
 
-    }
 
-    private void getSetlistSongsById(List<String> songIds) {
 
-        disposable.add(
-                setlistSongsViewModel.getSetlistSongsById(songIds)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new Consumer<List<Song>>() {
 
-                            @Override
-                            public void accept(List<Song> songs) throws Exception {
-
-                                dataset.clear();
-                                dataset.addAll(songs);
-                                adapter.notifyDataSetChanged();
-
-                            }
-                        }, new Consumer<Throwable>() {
-
-                            @Override
-                            public void accept(Throwable throwable) throws Exception {
-
-                                Log.e(TAG, "Unable to get songs", throwable);
-
-                            }
-
-                        })
-        );
 
     }
 

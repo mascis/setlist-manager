@@ -1,6 +1,7 @@
 package setlistmanager.data.source.local;
 
 import android.arch.persistence.room.TypeConverter;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -10,11 +11,15 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import setlistmanager.data.Song;
+
 /**
  * Created by User on 14.12.2017.
  */
 
 public class Converters {
+
+    private static final String TAG = Converters.class.getSimpleName();
 
     @TypeConverter
     public static Date fromTimestamp( Long timestamp ) {
@@ -64,6 +69,7 @@ public class Converters {
         }
 
         Type type = new TypeToken<List<String>>() {}.getType();
+
         return new Gson().fromJson(value, type);
 
     }

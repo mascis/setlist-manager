@@ -35,6 +35,7 @@ public class AddSongsToSetlistActivity extends AppCompatActivity {
     private final String TAG = AddSongsToSetlistActivity.class.getSimpleName();
 
     public static final String SETLIST_ID = "setlistId";
+    public static final String SETLIST_NAME = "setlistName";
 
     private ViewModelFactory viewModelFactory;
 
@@ -65,14 +66,16 @@ public class AddSongsToSetlistActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_songs_to_setlist);
 
+        Bundle extras = getIntent().getExtras();
+        setlistId = extras.getString(SETLIST_ID);
+        final String setlistName = extras.getString(SETLIST_NAME);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
-        actionBar.setTitle(getResources().getString(R.string.songs_title));
+        actionBar.setTitle(getResources().getString(R.string.add_songs_to_setlist_title) + " " + setlistName);
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setDisplayShowHomeEnabled(true);
-
-        setlistId = getIntent().getStringExtra(SETLIST_ID);
 
         viewModelFactory = Injection.provideViewModelFactory(this, this);
         addSongsToSetlistViewModel = ViewModelProviders.of(this, viewModelFactory).get(AddSongsToSetlistViewModel.class);
@@ -149,10 +152,10 @@ public class AddSongsToSetlistActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(Setlist _setlist) {
 
-                        Log.i(TAG, "getSetlist successful");
                         setlist = _setlist;
 
                         getAvailableSongs(setlist.getSongs());
+
                     }
 
                     @Override
@@ -215,8 +218,6 @@ public class AddSongsToSetlistActivity extends AppCompatActivity {
 
             AddSongsToSetlistRecyclerViewAdapter.ViewHolder holder = (AddSongsToSetlistRecyclerViewAdapter.ViewHolder) recyclerView.getChildViewHolder(recyclerView.getChildAt(i));
 
-            Log.i(TAG, "pos: " + i + ", is checked: " + holder.checkBox.isChecked());
-
             if ( holder.checkBox.isChecked() ) {
                 selectedSongs.add(dataset.get(i).getId());
             }
@@ -236,11 +237,6 @@ public class AddSongsToSetlistActivity extends AppCompatActivity {
 
         if ( setlist.getSongs() != null && !setlist.getSongs().isEmpty() ) {
             updatedSongList.addAll(setlist.getSongs());
-        }
-
-        Log.i(TAG, "Updated song list:");
-        for( String songId : updatedSongList ) {
-            Log.i(TAG, songId);
         }
 
         disposable.add(

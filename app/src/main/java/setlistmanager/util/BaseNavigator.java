@@ -1,5 +1,7 @@
 package setlistmanager.util;
 
+import android.os.Bundle;
+
 import java.util.Map;
 
 /**
@@ -18,4 +20,5 @@ public interface BaseNavigator {
 
     void startActivityForResultWithExtrasBundle(Class clazz, int requestcode, Map<String, String> extras);
 
+    void startActivityForResultWithBundle(Class clazz, int requestcode, Bundle bundle);
 }

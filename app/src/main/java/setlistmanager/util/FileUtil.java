@@ -1,12 +1,17 @@
 package setlistmanager.util;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.ContentUris;
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
 import android.widget.TextView;
@@ -34,6 +39,8 @@ public final class FileUtil {
     public static final String MIME_TYPE_IMAGES = "image/*";
 
     public static final int READ_REQUEST_CODE = 42;
+    public static final int PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 200;
+    public static final int PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 201;
 
     public static String[] getSuppportedMimeTypes() {
 
@@ -128,6 +135,47 @@ public final class FileUtil {
         }
 
         return Environment.getExternalStorageDirectory().toString();
+
+    }
+
+    /* Checks if external storage is available for read and write */
+    public static boolean isExternalStorageWritable() {
+
+        String state = Environment.getExternalStorageState();
+
+        if (Environment.MEDIA_MOUNTED.equals(state)) {
+
+            return true;
+
+        }
+
+        return false;
+
+    }
+
+    public static boolean isExternalStorageReadable() {
+
+        String state = Environment.getExternalStorageState();
+
+        if (Environment.MEDIA_MOUNTED.equals(state) || Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
+
+            return true;
+
+        }
+
+        return false;
+
+    }
+
+    public static boolean hasPermissionToReadExternalStorage(Activity activity) {
+
+        int permissionCheck = ContextCompat.checkSelfPermission(activity, Manifest.permission.READ_EXTERNAL_STORAGE);
+
+        if ( permissionCheck == PackageManager.PERMISSION_GRANTED ) {
+            return true;
+        }
+
+        return false;
 
     }
 

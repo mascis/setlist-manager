@@ -8,6 +8,8 @@
     <string name="setlist_date">Date</string>
     <string name="addedit_setlist_name_cannot_be_emtpy">Name cannot be empty</string>
 
+    <string name="add_songs_to_setlist_title">Add songs to</string>
+
     <string name="context_menu_edit">Edit</string>
     <string name="context_menu_duplicate">Duplicate</string>
     <string name="context_menu_remove">Remove</string>
@@ -39,6 +41,8 @@
 
     <string name="drawer_open">Menu</string>
     <string name="drawer_close">Close</string>
+
+    <string name="screen_slider_no_data_available">No data available.</string>
 
 
 </resources>

@@ -24,6 +24,11 @@ public class SetlistSongsRecyclerViewAdapter extends RecyclerView.Adapter<Setlis
 
     private static final String TAG = SetlistSongsRecyclerViewAdapter.class.getSimpleName();
 
+    public interface ItemClickListener {
+        public void onItemClick(int position);
+    }
+
+    private ItemClickListener itemClickListener;
     private List<Song> dataset;
     private Context context;
     private int position;
@@ -60,16 +65,23 @@ public class SetlistSongsRecyclerViewAdapter extends RecyclerView.Adapter<Setlis
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
+        itemClickListener = (ItemClickListener) parent.getContext();
+
         View textView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.songs_list_item, parent, false);
 
         return new ViewHolder(textView);
     }
 
-
-
     @Override
-    public void onBindViewHolder(final ViewHolder holder, int position) {
+    public void onBindViewHolder(final ViewHolder holder, final int position) {
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                itemClickListener.onItemClick(holder.getLayoutPosition());
+            }
+        });
 
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
