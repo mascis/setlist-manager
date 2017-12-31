@@ -40,6 +40,7 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import setlistmanager.Injection;
 import setlistmanager.ViewModelFactory;
+import setlistmanager.data.Setlist;
 import setlistmanager.data.Song;
 import setlistmanager.data.source.local.Converters;
 import setlistmanager.screenslide.ScreenSlideActivity;
@@ -213,7 +214,7 @@ public class SetlistSongsActivity extends AppCompatActivity implements ConfirmDi
 
         try {
             song = dataset.get(getAdapterPosition());
-            //deleteSongFromSetlist(song.getId());
+            removeSongFromSetlist(song.getId());
         } catch (Exception e) {
             Log.e(TAG, "Deleting song failed");
         }
@@ -293,6 +294,70 @@ public class SetlistSongsActivity extends AppCompatActivity implements ConfirmDi
 
                             }
 
+                        })
+        );
+
+    }
+
+    private void removeSongFromSetlist( final String songId ) {
+
+        setlistSongsViewModel.getSetlist(setlistId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<Setlist>() {
+                    @Override
+                    public void accept(Setlist setlist) throws Exception {
+
+                        if ( setlist != null ) {
+
+                            List<String> songList = setlist.getSongs();
+                            List<String> updatedSongList = new ArrayList<>();
+
+                            for( String id : songList ) {
+
+                               if ( !songId.equals(id) ) {
+
+                                   updatedSongList.add(id);
+
+                               }
+
+                            }
+
+                            updateSetlistSongs(setlist, updatedSongList);
+
+                        }
+
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+
+                        Log.e(TAG, "Could not get setlist with id " + setlistId, throwable);
+
+                    }
+                });
+
+    }
+
+    private void updateSetlistSongs(Setlist setlist, final List<String> updatedSongList) {
+
+        disposable.add(
+                setlistSongsViewModel.updateSetlistSongs(setlist, updatedSongList)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Action() {
+                            @Override
+                            public void run() throws Exception {
+                                Log.i(TAG, "Song removed from list successfully");
+
+                                getSetlistSongsById(updatedSongList);
+
+                            }
+                        }, new Consumer<Throwable>() {
+                            @Override
+                            public void accept(Throwable throwable) throws Exception {
+                                Log.e(TAG, "Error updating song list", throwable);
+                            }
                         })
         );
 
