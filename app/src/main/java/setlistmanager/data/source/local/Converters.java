@@ -4,7 +4,10 @@ import android.arch.persistence.room.TypeConverter;
 import android.util.Log;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSerializer;
 import com.google.gson.reflect.TypeToken;
+
+import org.json.JSONArray;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;

@@ -2,6 +2,7 @@ package setlistmanager.song;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -24,6 +25,11 @@ public class SongRecyclerViewAdapter extends RecyclerView.Adapter<SongRecyclerVi
 
     private static final String TAG = SongRecyclerViewAdapter.class.getSimpleName();
 
+    public interface ItemClickListener {
+        public void onItemClick(int position);
+    }
+
+    private ItemClickListener itemClickListener;
     private List<Song> dataset;
     private Context context;
     private int position;
@@ -38,6 +44,7 @@ public class SongRecyclerViewAdapter extends RecyclerView.Adapter<SongRecyclerVi
             this.title = (TextView) view.findViewById(R.id.songs_list_item_title);
             this.artist = (TextView) view.findViewById(R.id.songs_list_item_artist);
             view.setOnCreateContextMenuListener(this);
+
         }
 
         @Override
@@ -61,22 +68,29 @@ public class SongRecyclerViewAdapter extends RecyclerView.Adapter<SongRecyclerVi
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
+        itemClickListener = (ItemClickListener) parent.getContext();
+
         View textView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.songs_list_item, parent, false);
+        .inflate(R.layout.songs_list_item, parent, false);
 
         return new ViewHolder(textView);
     }
 
-
-
     @Override
-    public void onBindViewHolder(final ViewHolder holder, int position) {
+    public void onBindViewHolder(final ViewHolder holder, final int position) {
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+            itemClickListener.onItemClick(position);
+            }
+        });
 
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                setPosition(holder.getLayoutPosition());
-                return false;
+            setPosition(holder.getLayoutPosition());
+            return false;
             }
         });
 

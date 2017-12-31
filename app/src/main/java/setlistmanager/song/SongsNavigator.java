@@ -1,5 +1,9 @@
 package setlistmanager.song;
 
+import android.app.Activity;
+import android.os.Bundle;
+
+import setlistmanager.screenslide.ScreenSlideActivity;
 import setlistmanager.setlist.AddEditSetlistActivity;
 import setlistmanager.setlist.SetlistsActivity;
 import setlistmanager.util.BaseNavigator;
@@ -26,5 +30,9 @@ public class SongsNavigator {
 
     void toSetlists() {
         navigationProvider.startActivityForResult(SetlistsActivity.class, 1);
+    }
+
+    void toScreenSlider(Bundle bundle) {
+        navigationProvider.startActivityForResultWithBundle(ScreenSlideActivity.class, Activity.RESULT_OK, bundle);
     }
 }

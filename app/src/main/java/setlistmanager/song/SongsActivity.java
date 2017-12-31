@@ -22,6 +22,7 @@ import android.view.View;
 
 import com.setlistmanager.R;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,9 +34,11 @@ import io.reactivex.schedulers.Schedulers;
 import setlistmanager.Injection;
 import setlistmanager.ViewModelFactory;
 import setlistmanager.data.Song;
+import setlistmanager.screenslide.ScreenSlideActivity;
+import setlistmanager.setlist.SetlistSongsRecyclerViewAdapter;
 import setlistmanager.util.ConfirmDialogFragment;
 
-public class SongsActivity extends AppCompatActivity implements ConfirmDialogFragment.ConfirmDialogListener {
+public class SongsActivity extends AppCompatActivity implements ConfirmDialogFragment.ConfirmDialogListener, SongRecyclerViewAdapter.ItemClickListener {
 
     private static final String TAG = SongsActivity.class.getSimpleName();
 
@@ -135,6 +138,19 @@ public class SongsActivity extends AppCompatActivity implements ConfirmDialogFra
     protected void onStart() {
         super.onStart();
         getSongs();
+    }
+
+    @Override
+    public void onItemClick(int position) {
+
+        Bundle bundle = new Bundle();
+
+        bundle.putString(ScreenSlideActivity.EXTRA_START_POSITION, String.valueOf(position));
+        bundle.putString(ScreenSlideActivity.EXTRA_NUM_PAGES, String.valueOf(dataset.size()));
+        bundle.putSerializable(ScreenSlideActivity.EXTRA_NUM_ITEMS, (Serializable) dataset);
+
+        songsNavigator.toScreenSlider(bundle);
+
     }
 
     @Override

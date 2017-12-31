@@ -245,6 +245,7 @@ public class SetlistSongsActivity extends AppCompatActivity implements ConfirmDi
                             public void accept(List<String> songs) throws Exception {
 
                                 if ( songs.get(0) != null ) {
+
                                     List<String> songIds = Converters.listfromString(songs.get(0));
                                     getSetlistSongsById(songIds);
                                 }
@@ -294,10 +295,6 @@ public class SetlistSongsActivity extends AppCompatActivity implements ConfirmDi
 
                         })
         );
-
-
-
-
 
     }
 

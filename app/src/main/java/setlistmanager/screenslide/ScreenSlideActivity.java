@@ -2,7 +2,6 @@ package setlistmanager.screenslide;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
-import android.database.DataSetObserver;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -14,19 +13,12 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
-import android.view.ViewGroup;
 
-import com.github.barteksc.pdfviewer.listener.OnLoadCompleteListener;
 import com.setlistmanager.R;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Observable;
 
-import io.reactivex.Flowable;
-import io.reactivex.functions.Action;
-import io.reactivex.functions.Consumer;
 import setlistmanager.data.Song;
 import setlistmanager.util.FileUtil;
 
@@ -104,7 +96,6 @@ public class ScreenSlideActivity extends FragmentActivity {
 
             case FileUtil.PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE: {
 
-                // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
                     init();
@@ -160,22 +151,32 @@ public class ScreenSlideActivity extends FragmentActivity {
 
             Song song = songs.get(i);
             String uriString = song.getUri();
-            Uri uri = Uri.parse(uriString);
 
-            if (FileUtil.isImage(uri) ) {
+            if ( uriString != null ) {
 
-                ScreenSlidePageFragmentImg screenSlidePageFragmentImg = ScreenSlidePageFragmentImg.newInstance(getApplicationContext(), uriString);
-                fragments.add(screenSlidePageFragmentImg);
+                Uri uri = Uri.parse(uriString);
 
-            } else if (FileUtil.isPlainText(uri) ) {
+                if (FileUtil.isImage(uri) ) {
 
-                ScreenSlidePageFragmentTxt screenSlidePageFragmentTxt = ScreenSlidePageFragmentTxt.newInstance(getApplicationContext(), uri);
-                fragments.add(screenSlidePageFragmentTxt);
+                    ScreenSlidePageFragmentImg screenSlidePageFragmentImg = ScreenSlidePageFragmentImg.newInstance(getApplicationContext(), uriString);
+                    fragments.add(screenSlidePageFragmentImg);
 
-            } else if (FileUtil.isPdf(uri) ) {
+                } else if (FileUtil.isPlainText(uri) ) {
 
-                ScreenSlidePageFragmentPdf screenSlidePageFragmentPdf = ScreenSlidePageFragmentPdf.newInstance(getApplicationContext(), uriString);
-                fragments.add(screenSlidePageFragmentPdf);
+                    ScreenSlidePageFragmentTxt screenSlidePageFragmentTxt = ScreenSlidePageFragmentTxt.newInstance(getApplicationContext(), uri);
+                    fragments.add(screenSlidePageFragmentTxt);
+
+                } else if (FileUtil.isPdf(uri) ) {
+
+                    ScreenSlidePageFragmentPdf screenSlidePageFragmentPdf = ScreenSlidePageFragmentPdf.newInstance(getApplicationContext(), uriString);
+                    fragments.add(screenSlidePageFragmentPdf);
+
+                } else {
+
+                    ScreenSlidePageFragmentEmpty screenSlidePageFragmentEmpty = new ScreenSlidePageFragmentEmpty();
+                    fragments.add(screenSlidePageFragmentEmpty);
+
+                }
 
             } else {
 
@@ -210,6 +211,7 @@ public class ScreenSlideActivity extends FragmentActivity {
         List<Fragment> fragments = getFragments();
 
         pagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager(), fragments);
+        viewPager.setAdapter(pagerAdapter);
 
         if ( extras.getString(EXTRA_START_POSITION) != null ) {
 
@@ -217,8 +219,6 @@ public class ScreenSlideActivity extends FragmentActivity {
             viewPager.setCurrentItem(start_position);
 
         }
-
-        viewPager.setAdapter(pagerAdapter);
 
     }
 

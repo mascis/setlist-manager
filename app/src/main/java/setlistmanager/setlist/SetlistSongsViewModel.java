@@ -10,6 +10,7 @@ import java.util.List;
 
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
+import io.reactivex.functions.Action;
 import setlistmanager.data.Song;
 import setlistmanager.data.source.local.LocalDataSource;
 
@@ -43,23 +44,12 @@ public class SetlistSongsViewModel extends ViewModel {
 
     public Flowable<List<Song>> getSetlistSongsById(@NonNull List<String> songIds) {
 
+        if ( songIds == null || songIds.isEmpty() ) {
+            return null;
+        }
+
         return localDataSource.getSongsById(songIds);
 
     }
 
-    public Completable deleteSongFromSetlist(@NonNull final String songId, @NonNull final String setlistId) {
-
-        /*
-        return Completable.fromAction(new Action() {
-            @Override
-            public void run() throws Exception {
-
-
-
-            }
-        });
-        */
-
-        return null;
-    }
 }
