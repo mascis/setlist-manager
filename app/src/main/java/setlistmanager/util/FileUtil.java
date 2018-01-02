@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
@@ -52,13 +53,17 @@ public final class FileUtil {
 
     public static String getPathFromUri( Context context, Uri uri ) {
 
+        if ( uri == null ) {
+            return null;
+        }
+
         String path = null;
         String selection = null;
         String[] selectionArgs = null;
 
         if (Build.VERSION.SDK_INT >= 19 && DocumentsContract.isDocumentUri(context.getApplicationContext(), uri)) {
 
-            if (isExternalStorageDocument(uri)) {
+            if ( isExternalStorageDocument(uri) ) {
 
                 final String docId = DocumentsContract.getDocumentId(uri);
                 final String[] split = docId.split(":");
@@ -67,31 +72,18 @@ public final class FileUtil {
             } else if (isDownloadsDocument(uri)) {
 
                 final String id = DocumentsContract.getDocumentId(uri);
-                final String[] split = id.split(":");
-                return split[1];
-
-                /*
-                final String id = DocumentsContract.getDocumentId(uri);
                 uri = ContentUris.withAppendedId(Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));
-                */
 
             } else if (isMediaDocument(uri)) {
 
                 final String docId = DocumentsContract.getDocumentId(uri);
+
                 final String[] split = docId.split(":");
                 final String type = split[0];
 
                 if ("image".equals(type)) {
 
                     uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-
-                } else if ("video".equals(type)) {
-
-                    uri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
-
-                } else if ("audio".equals(type)) {
-
-                    uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
 
                 }
 
@@ -100,9 +92,40 @@ public final class FileUtil {
                         split[1]
                 };
             }
+
         }
 
-        return path;
+        if ( "content".equalsIgnoreCase(uri.getScheme()) ) {
+
+            String[] projection = {
+                    MediaStore.Images.Media.DATA
+            };
+
+            Cursor cursor = null;
+
+            try {
+
+                cursor = context.getContentResolver().query(uri, projection, selection, selectionArgs, null);
+
+                int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+
+                if (cursor.moveToFirst()) {
+
+                    return cursor.getString(column_index);
+
+                }
+
+            } catch (Exception e) {
+
+            }
+
+        } else if ( "file".equalsIgnoreCase(uri.getScheme()) ) {
+
+            return uri.getPath();
+
+        }
+
+        return null;
 
     }
 
@@ -218,13 +241,15 @@ public final class FileUtil {
 
     }
 
-    public static boolean isPdf( Uri uri ) {
+    public static boolean isPdf( Context context, Uri uri ) {
 
-        if ( uri == null ) {
+        String path = getPathFromUri(context, uri);
+
+        if ( path == null ) {
             return false;
         }
 
-        if ( uri.toString().endsWith("pdf") ) {
+        if ( path.endsWith("pdf") ) {
             return true;
         }
 
@@ -232,13 +257,15 @@ public final class FileUtil {
 
     }
 
-    public static boolean isPlainText( Uri uri ) {
+    public static boolean isPlainText( Context context, Uri uri ) {
 
-        if ( uri == null ) {
+        String path = getPathFromUri(context, uri);
+
+        if ( path == null ) {
             return false;
         }
-        
-        if ( uri.toString().endsWith("txt") ) {
+
+        if ( path.endsWith("txt") ) {
             return true;
         }
 
@@ -246,19 +273,21 @@ public final class FileUtil {
 
     }
 
-    public static boolean isImage( Uri uri ) {
+    public static boolean isImage( Context context, Uri uri ) {
 
-        if ( uri == null ) {
+        String path = getPathFromUri(context, uri);
+
+        if ( path == null ) {
             return false;
         }
 
-        String[] split = uri.toString().split("\\.");
+        String[] split = path.split("\\.");
 
         int lastIndex = split.length - 1;
         String extension = split[lastIndex];
         String mimeType = mimeTypeMap.getMimeTypeFromExtension(extension);
 
-        if ( mimeType.startsWith("image") ) {
+        if ( mimeType != null && mimeType.startsWith("image")) {
             return true;
         }
 

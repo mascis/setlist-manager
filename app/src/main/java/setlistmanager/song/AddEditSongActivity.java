@@ -35,6 +35,8 @@ public class AddEditSongActivity extends AppCompatActivity {
     public static final int REQUEST_ADD_SONG = 1;
     public static final int REQUEST_EDIT_SONG = 2;
 
+    public static final String EXTRA_SONG_ID = "id";
+
     private static final String TAG = AddEditSongActivity.class.getSimpleName();
 
     private ViewModelFactory viewModelFactory;
@@ -80,7 +82,7 @@ public class AddEditSongActivity extends AppCompatActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setDisplayShowHomeEnabled(true);
 
-        songId = getIntent().getStringExtra("id");
+        songId = getIntent().getStringExtra(EXTRA_SONG_ID);
 
         if ( songId != null ) {
 
@@ -233,7 +235,7 @@ public class AddEditSongActivity extends AppCompatActivity {
                         @Override
                         public void onError(Throwable e) {
 
-                            Log.e(TAG, "Error fetchin song", e);
+                            Log.e(TAG, "Error fetching song", e);
                         }
                     });
 

@@ -6,6 +6,7 @@ import android.os.Bundle;
 import java.util.Map;
 
 import setlistmanager.screenslide.ScreenSlideActivity;
+import setlistmanager.song.AddEditSongActivity;
 import setlistmanager.song.SongsActivity;
 import setlistmanager.util.BaseNavigator;
 
@@ -21,11 +22,9 @@ public class SetlistSongsNavigator {
         this.navigationProvider = navigationProvider;
     }
 
-    void editSong(String id) {}
-
-    void toSetlists() {}
-
-    void toSongs() {}
+    void editSong(String id) {
+        navigationProvider.startActivityForResultWithExtra(AddEditSongActivity.class, Activity.RESULT_OK, AddEditSongActivity.EXTRA_SONG_ID, id);
+    }
 
     void addSongsToSetlist(Map<String, String> extras) {
         navigationProvider.startActivityForResultWithExtrasBundle(AddSongsToSetlistActivity.class, Activity.RESULT_OK, extras);

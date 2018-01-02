@@ -151,22 +151,21 @@ public class ScreenSlideActivity extends FragmentActivity {
 
             Song song = songs.get(i);
             String uriString = song.getUri();
+            Uri uri = Uri.parse(uriString);
 
-            if ( uriString != null ) {
+            if ( uri != null && uriString != null ) {
 
-                Uri uri = Uri.parse(uriString);
-
-                if (FileUtil.isImage(uri) ) {
+                if (FileUtil.isImage(getApplicationContext(), uri) ) {
 
                     ScreenSlidePageFragmentImg screenSlidePageFragmentImg = ScreenSlidePageFragmentImg.newInstance(getApplicationContext(), uriString);
                     fragments.add(screenSlidePageFragmentImg);
 
-                } else if (FileUtil.isPlainText(uri) ) {
+                } else if (FileUtil.isPlainText(getApplicationContext(), uri) ) {
 
                     ScreenSlidePageFragmentTxt screenSlidePageFragmentTxt = ScreenSlidePageFragmentTxt.newInstance(getApplicationContext(), uri);
                     fragments.add(screenSlidePageFragmentTxt);
 
-                } else if (FileUtil.isPdf(uri) ) {
+                } else if (FileUtil.isPdf(getApplicationContext(), uri) ) {
 
                     ScreenSlidePageFragmentPdf screenSlidePageFragmentPdf = ScreenSlidePageFragmentPdf.newInstance(getApplicationContext(), uriString);
                     fragments.add(screenSlidePageFragmentPdf);

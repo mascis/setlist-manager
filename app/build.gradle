@@ -47,7 +47,8 @@ dependencies {
     implementation "android.arch.lifecycle:extensions:1.0.0"
 
     //Gson
-    compile 'com.google.code.gson:gson:2.8.2'
+    //compile 'com.google.code.gson:gson:2.8.2'
+    implementation 'com.google.code.gson:gson:2.8.2'
 
     // Room
     implementation "android.arch.persistence.room:runtime:$rootProject.roomVersion"
@@ -56,8 +57,10 @@ dependencies {
 
     // RXJava
     implementation "android.arch.persistence.room:rxjava2:1.0.0"
-    compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
-    compile 'io.reactivex.rxjava2:rxjava:2.1.7'
+    implementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
+    implementation 'io.reactivex.rxjava2:rxjava:2.1.7'
+    //compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
+    //compile 'io.reactivex.rxjava2:rxjava:2.1.7'
 
     // Recycler View
     implementation 'com.android.support:recyclerview-v7:26.1.0'
@@ -65,6 +68,7 @@ dependencies {
     // Snackbar
     implementation 'com.android.support:design:26.1.0'
 
-    compile 'com.github.barteksc:android-pdf-viewer:2.8.2'
+    implementation 'com.github.barteksc:android-pdf-viewer:2.8.2'
+    //compile 'com.github.barteksc:android-pdf-viewer:2.8.2'
 
 }

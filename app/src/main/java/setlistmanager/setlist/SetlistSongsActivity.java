@@ -245,10 +245,15 @@ public class SetlistSongsActivity extends AppCompatActivity implements ConfirmDi
                             @Override
                             public void accept(List<String> songs) throws Exception {
 
-                                if ( songs.get(0) != null ) {
+                                if ( songs != null && songs.get(0) != null ) {
 
                                     List<String> songIds = Converters.listfromString(songs.get(0));
-                                    getSetlistSongsById(songIds);
+
+                                    if ( songIds != null && !songIds.isEmpty() ) {
+                                        getSetlistSongsById(songIds);
+                                    }
+
+
                                 }
 
                             }
@@ -258,7 +263,7 @@ public class SetlistSongsActivity extends AppCompatActivity implements ConfirmDi
                             @Override
                             public void accept(Throwable throwable) throws Exception {
 
-                                Log.e(TAG, "Unable to get songs", throwable);
+                                Log.e(TAG, "Unable to get song ids", throwable);
 
                             }
 
@@ -268,6 +273,10 @@ public class SetlistSongsActivity extends AppCompatActivity implements ConfirmDi
     }
 
     private void getSetlistSongsById(final List<String> songIds) {
+
+        if ( songIds == null && !songIds.isEmpty() ) {
+            return;
+        }
 
         disposable.add(
                 setlistSongsViewModel.getSetlistSongsById(songIds)
