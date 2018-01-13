@@ -66,6 +66,8 @@ public class AddEditSongActivity extends AppCompatActivity {
 
     private Toast toastSaveFailed;
 
+    private Toast toastNotSupported;
+
     private String songId;
 
     private Song song;
@@ -149,6 +151,9 @@ public class AddEditSongActivity extends AppCompatActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent resultData) {
 
+        Log.i(TAG, "onActivityResult");
+        Log.i(TAG, "requestCode = " + requestCode + ", resultCode = " + resultCode + ", resultData = " + resultData);
+
         if ( requestCode == FileUtil.READ_REQUEST_CODE && resultCode == Activity.RESULT_OK ) {
 
             Uri uri = null;
@@ -156,6 +161,14 @@ public class AddEditSongActivity extends AppCompatActivity {
             if (resultData != null) {
 
                 uri = resultData.getData();
+
+                if ( FileUtil.isGoogleDriveDocument(uri) ) {
+
+                    toastNotSupported = Toast.makeText(getApplicationContext(), "Google Drive not yet supported", Toast.LENGTH_SHORT);
+                    toastNotSupported.show();
+                    return;
+
+                }
 
                 songUri = uri.toString();
 

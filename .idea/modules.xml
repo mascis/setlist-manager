@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/SetlistManager.iml" filepath="$PROJECT_DIR$/SetlistManager.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/poishadow-all/poishadow-all.iml" filepath="$PROJECT_DIR$/poishadow-all/poishadow-all.iml" />
     </modules>
   </component>
 </project>

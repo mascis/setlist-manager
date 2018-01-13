@@ -13,6 +13,7 @@ import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.MimeTypeFilter;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
 import android.widget.TextView;
@@ -39,6 +40,7 @@ public final class FileUtil {
 
     public static final String MIME_TYPE_PDF = mimeTypeMap.getMimeTypeFromExtension("pdf");
     public static final String MIME_TYPE_PLAIN_TEXT = mimeTypeMap.getMimeTypeFromExtension("txt");
+    public static final String MIME_TYPE_DOCX = mimeTypeMap.getMimeTypeFromExtension("docx");
     public static final String MIME_TYPE_IMAGES = "image/*";
 
     public static final int READ_REQUEST_CODE = 42;
@@ -47,7 +49,12 @@ public final class FileUtil {
 
     public static String[] getSuppportedMimeTypes() {
 
-        String[] mimetypes = {MIME_TYPE_PDF, MIME_TYPE_PLAIN_TEXT, MIME_TYPE_IMAGES};
+        String[] mimetypes = {
+                MIME_TYPE_PDF,
+                MIME_TYPE_PLAIN_TEXT,
+                MIME_TYPE_DOCX,
+                MIME_TYPE_IMAGES
+        };
 
         return mimetypes;
 
@@ -93,6 +100,12 @@ public final class FileUtil {
                 selectionArgs = new String[]{
                         split[1]
                 };
+
+            } else if ( isGoogleDriveDocument(uri) ) {
+
+
+
+
             }
 
         }
@@ -141,6 +154,10 @@ public final class FileUtil {
 
     public static boolean isMediaDocument(Uri uri) {
         return "com.android.providers.media.documents".equals(uri.getAuthority());
+    }
+
+    public static boolean isGoogleDriveDocument(Uri uri) {
+        return "com.google.android.apps.docs.storage".equals(uri.getAuthority());
     }
 
     public static String getExternalStoragePath() {
@@ -304,6 +321,22 @@ public final class FileUtil {
         String mimeType = mimeTypeMap.getMimeTypeFromExtension(extension);
 
         if ( mimeType != null && mimeType.startsWith("image")) {
+            return true;
+        }
+
+        return false;
+
+    }
+
+    public static boolean isDocx( Context context, Uri uri ) {
+
+        String path = getPathFromUri(context, uri);
+
+        if ( !isReadableFile(path) ) {
+            return false;
+        }
+
+        if ( path.endsWith("docx") ) {
             return true;
         }
 
