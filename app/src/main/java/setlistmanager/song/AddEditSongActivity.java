@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.setlistmanager.R;
 
@@ -63,6 +64,8 @@ public class AddEditSongActivity extends AppCompatActivity {
 
     private Snackbar snackbarFail;
 
+    private Toast toastSaveFailed;
+
     private String songId;
 
     private Song song;
@@ -104,6 +107,7 @@ public class AddEditSongActivity extends AppCompatActivity {
         cancelButton = (Button) findViewById(R.id.button_cancel);
 
         snackbarFail = Snackbar.make(findViewById(R.id.addedit_song_layout), getResources().getText(R.string.addedit_song_title_cannot_be_emtpy), Snackbar.LENGTH_LONG);
+        toastSaveFailed = Toast.makeText(getApplicationContext(), getResources().getText(R.string.addedit_save_failed), Toast.LENGTH_LONG);
 
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -183,10 +187,11 @@ public class AddEditSongActivity extends AppCompatActivity {
 
         String songTitle = title.getText().toString();
         String songArtist = artist.getText().toString();
+        String songFilepath = filepath.getText().toString();
 
-        if ( songTitle == null || songTitle.isEmpty() ) {
-            Log.e(TAG, "Title cannot be empty");
-            snackbarFail.show();
+        if ( songTitle == null || songTitle.isEmpty() || songFilepath == null || songFilepath.isEmpty() ) {
+            //snackbarFail.show();
+            toastSaveFailed.show();
             return;
         }
 
@@ -199,7 +204,6 @@ public class AddEditSongActivity extends AppCompatActivity {
     }
 
     private void getSongById(String id) {
-
 
             addEditSongViewModel.getSongById(id)
                     .subscribeOn(Schedulers.io())
@@ -224,8 +228,11 @@ public class AddEditSongActivity extends AppCompatActivity {
                                 }
 
                                 if( song.getUri() != null ) {
-                                    String path = FileUtil.getPathFromUri(getApplicationContext(), Uri.parse( _song.getUri()));
+
+                                    songUri = song.getUri();
+                                    String path = FileUtil.getPathFromUri(getApplicationContext(), Uri.parse( song.getUri()));
                                     filepath.setText( path );
+
                                 }
 
                             }
@@ -243,6 +250,8 @@ public class AddEditSongActivity extends AppCompatActivity {
     }
 
     private void saveSong(Song song, String title, String artist, String uri) {
+
+        Log.i(TAG, "title = " + title + ", artist = " + artist + ", uri = " + uri);
 
         disposable.add(
                 addEditSongViewModel.saveSong(song, title, artist, uri)

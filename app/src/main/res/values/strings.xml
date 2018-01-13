@@ -7,6 +7,7 @@
     <string name="setlist_name">Name</string>
     <string name="setlist_date">Date</string>
     <string name="addedit_setlist_name_cannot_be_emtpy">Name cannot be empty</string>
+    <string name="addedit_save_failed">Save failed. Check title and filepath.</string>
 
     <string name="add_songs_to_setlist_title">Add songs to</string>
 
@@ -19,6 +20,8 @@
     <string name="confirm_dialog_delete_setlist_message">Are you sure you want to remove setlist</string>
     <string name="confirm_dialog_delete_song_title">Remove song</string>
     <string name="confirm_dialog_delete_song_message">Are you sure you want to remove song</string>
+    <string name="song_deleted_successfully">Song deleted successfully</string>
+    <string name="song_delete_failed">Failed to delete song</string>
 
     <string name="songs_title">Songs</string>
     <string name="add_song_title">Add song</string>
@@ -42,7 +45,7 @@
     <string name="drawer_open">Menu</string>
     <string name="drawer_close">Close</string>
 
-    <string name="screen_slider_no_data_available">No data available.</string>
+    <string name="screen_slider_no_data_available">No data available. The file may not exist or the song may have been removed from the catalogue within the application.</string>
 
 
 </resources>

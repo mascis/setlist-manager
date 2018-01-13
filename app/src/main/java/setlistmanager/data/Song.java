@@ -31,7 +31,7 @@ public class Song implements Serializable {
     @ColumnInfo(name = "artist")
     String artist;
 
-    @Nullable
+    @NonNull
     @ColumnInfo(name = "uri")
     String uri;
 
@@ -44,7 +44,7 @@ public class Song implements Serializable {
     Date modifiedAt;
 
     @Ignore
-    public Song(@NonNull String title, String artist, String uri, @NonNull Date createdAt, @NonNull Date modifiedAt) {
+    public Song(@NonNull String title, String artist, @NonNull String uri, @NonNull Date createdAt, @NonNull Date modifiedAt) {
         this.id = UUID.randomUUID().toString();
         this.title = title;
         this.artist = artist;
@@ -53,7 +53,7 @@ public class Song implements Serializable {
         this.modifiedAt = modifiedAt;
     }
 
-    public Song(@NonNull String id, @NonNull String title, String artist, String uri, @NonNull Date createdAt, @NonNull Date modifiedAt) {
+    public Song(@NonNull String id, @NonNull String title, String artist, @NonNull String uri, @NonNull Date createdAt, @NonNull Date modifiedAt) {
         this.id = id;
         this.title = title;
         this.artist = artist;
@@ -94,7 +94,7 @@ public class Song implements Serializable {
         return uri;
     }
 
-    public void setUri(@Nullable String uri) {
+    public void setUri(@NonNull String uri) {
         this.uri = uri;
     }
 

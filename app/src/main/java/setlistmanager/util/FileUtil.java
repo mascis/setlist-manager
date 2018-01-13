@@ -24,6 +24,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
 
 /**
  * Created by User on 19.12.2017.
@@ -67,7 +69,7 @@ public final class FileUtil {
 
                 final String docId = DocumentsContract.getDocumentId(uri);
                 final String[] split = docId.split(":");
-                return getExternalStoragePath() + "/" + split[1];
+                return Environment.getExternalStorageDirectory() + "/" + split[1];
 
             } else if (isDownloadsDocument(uri)) {
 
@@ -161,7 +163,6 @@ public final class FileUtil {
 
     }
 
-    /* Checks if external storage is available for read and write */
     public static boolean isExternalStorageWritable() {
 
         String state = Environment.getExternalStorageState();
@@ -241,11 +242,26 @@ public final class FileUtil {
 
     }
 
+    public static boolean isReadableFile( String path ) {
+
+        if ( path == null ) {
+            return false;
+        }
+
+        File file = new File(path);
+
+        if ( file.isFile() && file.canRead() ) {
+            return true;
+        }
+
+        return false;
+    }
+
     public static boolean isPdf( Context context, Uri uri ) {
 
         String path = getPathFromUri(context, uri);
 
-        if ( path == null ) {
+        if ( !isReadableFile(path) ) {
             return false;
         }
 
@@ -261,7 +277,7 @@ public final class FileUtil {
 
         String path = getPathFromUri(context, uri);
 
-        if ( path == null ) {
+        if ( !isReadableFile(path) ) {
             return false;
         }
 
@@ -277,7 +293,7 @@ public final class FileUtil {
 
         String path = getPathFromUri(context, uri);
 
-        if ( path == null ) {
+        if ( !isReadableFile(path) ) {
             return false;
         }
 

@@ -122,7 +122,7 @@ public class SetlistSongsActivity extends AppCompatActivity implements ConfirmDi
 
     @Override
     public boolean onSupportNavigateUp() {
-        onBackPressed();
+        setlistSongsNavigator.onBackPressed();
         return true;
     }
 

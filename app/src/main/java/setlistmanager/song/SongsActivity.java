@@ -19,6 +19,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.setlistmanager.R;
 
@@ -65,6 +66,10 @@ public class SongsActivity extends AppCompatActivity implements ConfirmDialogFra
     private NavigationView navigationView;
 
     private ActionBarDrawerToggle drawerToggle;
+
+    private Toast toastDeleteSuccessful;
+
+    private Toast toastDeleteFailed;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,6 +125,9 @@ public class SongsActivity extends AppCompatActivity implements ConfirmDialogFra
             }
         });
 
+        toastDeleteSuccessful = Toast.makeText(getApplicationContext(), getResources().getText(R.string.song_deleted_successfully), Toast.LENGTH_LONG);
+        toastDeleteFailed = Toast.makeText(getApplicationContext(), getResources().getText(R.string.song_deleted_successfully), Toast.LENGTH_LONG);
+
         dataset = new ArrayList<>();
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         recyclerView.setHasFixedSize(true);
@@ -165,16 +173,13 @@ public class SongsActivity extends AppCompatActivity implements ConfirmDialogFra
         switch (item.getItemId()) {
 
             case R.id.nav_setlists:
-                Log.i(TAG, "Setlists clicked in nav menu");
                 songsNavigator.toSetlists();
                 return true;
 
             case R.id.nav_songs:
-                Log.i(TAG, "Songs clicked in nav menu");
                 return true;
 
             case R.id.nav_settings:
-                Log.i(TAG, "Settings clicked in nav menu");
                 return true;
 
             default:
@@ -275,6 +280,7 @@ public class SongsActivity extends AppCompatActivity implements ConfirmDialogFra
             deleteSong(song.getId());
         } catch (Exception e) {
             Log.e(TAG, "Deleting song failed");
+            toastDeleteFailed.show();
         }
 
     }
@@ -319,12 +325,6 @@ public class SongsActivity extends AppCompatActivity implements ConfirmDialogFra
 
     private void deleteSong(String songId) {
 
-        /*
-        TODO
-        delete from setlists where it exists
-
-         */
-
         disposable.add(
                 songsViewModel.deleteSong(songId)
                         .subscribeOn(Schedulers.io())
@@ -334,13 +334,17 @@ public class SongsActivity extends AppCompatActivity implements ConfirmDialogFra
                             public void run() throws Exception {
 
                                 Log.i(TAG, "Song deleted successfully");
+                                toastDeleteSuccessful.show();
 
                             }
                         }, new Consumer<Throwable>() {
 
                             @Override
                             public void accept(Throwable throwable) throws Exception {
+
                                 Log.e(TAG, "Error deleting song", throwable);
+                                toastDeleteFailed.show();
+
                             }
 
                         })

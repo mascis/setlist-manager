@@ -34,4 +34,8 @@ public class SetlistSongsNavigator {
         navigationProvider.startActivityForResultWithBundle(ScreenSlideActivity.class, Activity.RESULT_OK, bundle);
     }
 
+    void onBackPressed() {
+        navigationProvider.startActivityForResult(SetlistsActivity.class, Activity.RESULT_OK);
+    }
+
 }

@@ -14,7 +14,7 @@ import setlistmanager.data.Song;
 /**
  * Created by User on 14.12.2017.
  */
-@Database(entities = {Setlist.class, Song.class}, version = 3)
+@Database(entities = {Setlist.class, Song.class}, version = 4)
 @TypeConverters({Converters.class})
 public abstract class SetlistManagerDatabase extends RoomDatabase {
 
