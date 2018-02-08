@@ -15,7 +15,7 @@ import com.setlistmanager.R;
 
 import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
-import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import org.apache.poi.xwpf.usermodel.XWPFHeader;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -42,6 +42,7 @@ public class ScreenSlidePageFragmentDocx extends Fragment {
         textView.setText( getArguments().getString("content"));
 
         return txtView;
+
     }
 
     public static ScreenSlidePageFragmentDocx newInstance(Context context, Uri uri) {
@@ -53,6 +54,9 @@ public class ScreenSlidePageFragmentDocx extends Fragment {
         try {
 
             XWPFDocument docx = new XWPFDocument(new FileInputStream(path));
+
+            List<XWPFHeader> headerList = docx.getHeaderList();
+
             XWPFWordExtractor wordExtractor = new XWPFWordExtractor(docx);
             String content = wordExtractor.getText();
             Bundle bundle = new Bundle();

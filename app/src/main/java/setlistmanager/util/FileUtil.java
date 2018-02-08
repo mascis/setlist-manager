@@ -220,6 +220,18 @@ public final class FileUtil {
 
     }
 
+    public static boolean hasPermissionToWriteExternalStorage(Activity activity) {
+
+        int permissionCheck = ContextCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+        if ( permissionCheck == PackageManager.PERMISSION_GRANTED ) {
+            return true;
+        }
+
+        return false;
+
+    }
+
     public static String getStringFromFile( String path ) throws FileNotFoundException, IOException {
 
         try {

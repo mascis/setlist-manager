@@ -60,5 +60,5 @@ dependencies {
     // PDF Viewer
     implementation 'com.github.barteksc:android-pdf-viewer:2.8.2'
     // Doc, docx
-    implementation project(':poishadow-all')
+    implementation files('libs/poishadow-all.jar')
 }

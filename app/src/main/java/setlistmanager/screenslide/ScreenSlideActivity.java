@@ -47,9 +47,9 @@ public class ScreenSlideActivity extends FragmentActivity {
 
         if ( FileUtil.isExternalStorageReadable() ) {
 
-            if ( !FileUtil.hasPermissionToReadExternalStorage(this) ) {
+            if ( !FileUtil.hasPermissionToWriteExternalStorage(this) ) {
 
-                Log.i(TAG, "No permission to read external storage. Requesting permission...");
+                Log.i(TAG, "No permission to write external storage. Requesting permission...");
 
                 /*
                 if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
@@ -64,7 +64,7 @@ public class ScreenSlideActivity extends FragmentActivity {
                 */
                     try {
 
-                        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, FileUtil.PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
+                        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, FileUtil.PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
 
                     } catch (Exception e) {
 
@@ -94,7 +94,7 @@ public class ScreenSlideActivity extends FragmentActivity {
 
         switch (requestCode) {
 
-            case FileUtil.PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE: {
+            case FileUtil.PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE: {
 
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
@@ -197,9 +197,11 @@ public class ScreenSlideActivity extends FragmentActivity {
 
     private void init() {
 
+
         System.setProperty("org.apache.poi.javax.xml.stream.XMLInputFactory", "com.fasterxml.aalto.stax.InputFactoryImpl");
         System.setProperty("org.apache.poi.javax.xml.stream.XMLOutputFactory", "com.fasterxml.aalto.stax.OutputFactoryImpl");
         System.setProperty("org.apache.poi.javax.xml.stream.XMLEventFactory", "com.fasterxml.aalto.stax.EventFactoryImpl");
+
 
         Bundle extras = getIntent().getExtras();
 
