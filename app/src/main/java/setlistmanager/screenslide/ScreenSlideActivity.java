@@ -169,12 +169,12 @@ public class ScreenSlideActivity extends FragmentActivity {
 
                     ScreenSlidePageFragmentPdf screenSlidePageFragmentPdf = ScreenSlidePageFragmentPdf.newInstance(getApplicationContext(), uriString);
                     fragments.add(screenSlidePageFragmentPdf);
-
+                /*
                 } else if (FileUtil.isDocx(getApplicationContext(), uri) ) {
 
                     ScreenSlidePageFragmentDocx screenSlidePageFragmentDocx = ScreenSlidePageFragmentDocx.newInstance(getApplicationContext(), uri);
                     fragments.add(screenSlidePageFragmentDocx);
-
+                */
                 } else {
 
                     ScreenSlidePageFragmentEmpty screenSlidePageFragmentEmpty = new ScreenSlidePageFragmentEmpty();
@@ -197,11 +197,9 @@ public class ScreenSlideActivity extends FragmentActivity {
 
     private void init() {
 
-
         System.setProperty("org.apache.poi.javax.xml.stream.XMLInputFactory", "com.fasterxml.aalto.stax.InputFactoryImpl");
         System.setProperty("org.apache.poi.javax.xml.stream.XMLOutputFactory", "com.fasterxml.aalto.stax.OutputFactoryImpl");
         System.setProperty("org.apache.poi.javax.xml.stream.XMLEventFactory", "com.fasterxml.aalto.stax.EventFactoryImpl");
-
 
         Bundle extras = getIntent().getExtras();
 

@@ -3,6 +3,7 @@ package setlistmanager.song;
 import android.app.Activity;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -150,9 +151,6 @@ public class AddEditSongActivity extends AppCompatActivity {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent resultData) {
-
-        Log.i(TAG, "onActivityResult");
-        Log.i(TAG, "requestCode = " + requestCode + ", resultCode = " + resultCode + ", resultData = " + resultData);
 
         if ( requestCode == FileUtil.READ_REQUEST_CODE && resultCode == Activity.RESULT_OK ) {
 

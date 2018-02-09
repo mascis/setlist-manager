@@ -10,6 +10,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:lineSpacingMultiplier="1.2"
-        android:padding="16dp" />
+        android:padding="16dp"
+        android:background="@android:color/white"
+        android:textColor="@android:color/black"/>
 
 </ScrollView>

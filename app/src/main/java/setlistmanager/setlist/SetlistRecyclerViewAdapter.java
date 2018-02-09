@@ -3,17 +3,22 @@ package setlistmanager.setlist;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.ActionMode;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckedTextView;
 import android.widget.TextView;
 
 import com.setlistmanager.R;
 
 import java.text.DateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import setlistmanager.Injection;
@@ -42,13 +47,17 @@ public class SetlistRecyclerViewAdapter extends RecyclerView.Adapter<SetlistRecy
         public TextView name;
         public TextView date;
         public TextView location;
+        public TextView options;
 
         public ViewHolder(View view) {
             super(view);
             this.name = (TextView) view.findViewById(R.id.setlists_list_item_name);
             this.date = (TextView) view.findViewById(R.id.setlists_list_item_date);
             this.location = (TextView) view.findViewById(R.id.setlists_list_item_location);
+            this.options = (TextView) view.findViewById(R.id.options_icon);
+
             view.setOnCreateContextMenuListener(this);
+
         }
 
         @Override
@@ -79,10 +88,19 @@ public class SetlistRecyclerViewAdapter extends RecyclerView.Adapter<SetlistRecy
                 .inflate(R.layout.setlists_list_item, parent, false);
 
         return new ViewHolder(textView);
+
     }
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
+
+        holder.options.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setPosition(holder.getLayoutPosition());
+                view.showContextMenu();
+            }
+        });
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -104,12 +122,29 @@ public class SetlistRecyclerViewAdapter extends RecyclerView.Adapter<SetlistRecy
             Setlist setlist = dataset.get(position);
             String name = setlist.getName();
 
-            String date = setlist.getDate() == null ? "" : setlist.getDate().toString();
+            Date date = setlist.getDate();
+            String dateStr = "";
+
+            if ( date != null ) {
+
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(date);
+
+                String day = String.valueOf(calendar.get(Calendar.DATE));
+                String month = String.valueOf(calendar.get(Calendar.MONTH) + 1);
+                String year = String.valueOf(calendar.get(Calendar.YEAR));
+
+                dateStr = day + "." + month + "." + year;
+
+            }
+
             String location = setlist.getLocation() == null ? "" : setlist.getLocation();
             holder.name.setText(name);
-            holder.date.setText(date);
+            holder.date.setText(dateStr);
             holder.location.setText(location);
+
         }
+
     }
 
     @Override

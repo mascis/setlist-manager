@@ -1,6 +1,7 @@
 package setlistmanager.screenslide;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -14,6 +15,7 @@ import android.widget.TextView;
 import com.setlistmanager.R;
 
 import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
+import org.apache.poi.xwpf.model.XWPFHeaderFooterPolicy;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFHeader;
 
@@ -36,10 +38,12 @@ public class ScreenSlidePageFragmentDocx extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        ViewGroup txtView = (ViewGroup) inflater.inflate(R.layout.fragment_screen_slide_page_txt, container, false);
+        ViewGroup txtView = (ViewGroup) inflater.inflate(R.layout.fragment_screen_slide_page_docx, container, false);
 
-        TextView textView = (TextView) txtView.findViewById(R.id.txtView);
+        TextView textView = (TextView) txtView.findViewById(R.id.docxView);
         textView.setText( getArguments().getString("content"));
+        //textView.setTypeface(Typeface.SERIF);
+        textView.setTextSize(12);
 
         return txtView;
 
@@ -55,7 +59,13 @@ public class ScreenSlidePageFragmentDocx extends Fragment {
 
             XWPFDocument docx = new XWPFDocument(new FileInputStream(path));
 
-            List<XWPFHeader> headerList = docx.getHeaderList();
+
+
+            XWPFHeader xwpfHeader = docx.getHeaderFooterPolicy().getHeader(XWPFHeaderFooterPolicy.FIRST);
+
+            Log.i(TAG, "header: " + xwpfHeader.getText());
+
+
 
             XWPFWordExtractor wordExtractor = new XWPFWordExtractor(docx);
             String content = wordExtractor.getText();

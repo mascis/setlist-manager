@@ -52,7 +52,6 @@ public final class FileUtil {
         String[] mimetypes = {
                 MIME_TYPE_PDF,
                 MIME_TYPE_PLAIN_TEXT,
-                MIME_TYPE_DOCX,
                 MIME_TYPE_IMAGES
         };
 
