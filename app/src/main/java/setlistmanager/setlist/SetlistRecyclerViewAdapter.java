@@ -1,28 +1,31 @@
 package setlistmanager.setlist;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.support.v4.view.MotionEventCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.ActionMode;
 import android.view.ContextMenu;
+import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckedTextView;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.setlistmanager.R;
 
-import java.text.DateFormat;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import setlistmanager.Injection;
+import setlistmanager.helper.ItemTouchHelperAdapter;
 import setlistmanager.data.Setlist;
+import setlistmanager.helper.ItemTouchHelperViewHolder;
+import setlistmanager.helper.OnStartDragListener;
 
 
 /**
@@ -41,36 +44,6 @@ public class SetlistRecyclerViewAdapter extends RecyclerView.Adapter<SetlistRecy
     private List<Setlist> dataset;
     private Context context;
     private int position;
-
-    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
-
-        public TextView name;
-        public TextView date;
-        public TextView location;
-        public TextView options;
-
-        public ViewHolder(View view) {
-            super(view);
-            this.name = (TextView) view.findViewById(R.id.setlists_list_item_name);
-            this.date = (TextView) view.findViewById(R.id.setlists_list_item_date);
-            this.location = (TextView) view.findViewById(R.id.setlists_list_item_location);
-            this.options = (TextView) view.findViewById(R.id.options_icon);
-
-            view.setOnCreateContextMenuListener(this);
-
-        }
-
-        @Override
-        public void onCreateContextMenu(ContextMenu contextMenu, View view, ContextMenu.ContextMenuInfo contextMenuInfo) {
-
-            // groupId, itemId, order, titleRes
-            contextMenu.add(Menu.NONE, R.id.edit, Menu.NONE, R.string.context_menu_edit);
-            contextMenu.add(Menu.NONE, R.id.duplicate, Menu.NONE, R.string.context_menu_duplicate);
-            contextMenu.add(Menu.NONE, R.id.remove, Menu.NONE, R.string.context_menu_remove);
-
-        }
-
-    }
 
     public SetlistRecyclerViewAdapter(Context context, List<Setlist> dataset) {
 
@@ -171,5 +144,36 @@ public class SetlistRecyclerViewAdapter extends RecyclerView.Adapter<SetlistRecy
 
     public void setPosition(int position) {
         this.position = position;
+    }
+
+    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
+
+        public TextView name;
+        public TextView date;
+        public TextView location;
+        public TextView options;
+        public ImageView dragHandle;
+
+        public ViewHolder(View view) {
+            super(view);
+            this.name = (TextView) view.findViewById(R.id.setlists_list_item_name);
+            this.date = (TextView) view.findViewById(R.id.setlists_list_item_date);
+            this.location = (TextView) view.findViewById(R.id.setlists_list_item_location);
+            this.options = (TextView) view.findViewById(R.id.options_icon);
+
+            view.setOnCreateContextMenuListener(this);
+
+        }
+
+        @Override
+        public void onCreateContextMenu(ContextMenu contextMenu, View view, ContextMenu.ContextMenuInfo contextMenuInfo) {
+
+            // groupId, itemId, order, titleRes
+            contextMenu.add(Menu.NONE, R.id.edit, Menu.NONE, R.string.context_menu_edit);
+            contextMenu.add(Menu.NONE, R.id.duplicate, Menu.NONE, R.string.context_menu_duplicate);
+            contextMenu.add(Menu.NONE, R.id.remove, Menu.NONE, R.string.context_menu_remove);
+
+        }
+
     }
 }

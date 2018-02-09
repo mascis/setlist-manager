@@ -1,11 +1,10 @@
 package setlistmanager.setlist;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.view.ContextMenu;
 import android.view.LayoutInflater;
-import android.view.Menu;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -15,6 +14,8 @@ import com.setlistmanager.R;
 import java.util.List;
 
 import setlistmanager.data.Song;
+import setlistmanager.helper.ItemTouchHelperViewHolder;
+import setlistmanager.helper.OnStartDragListener;
 
 
 /**
@@ -26,44 +27,23 @@ public class SetlistSongsRecyclerViewAdapter extends RecyclerView.Adapter<Setlis
     private static final String TAG = SetlistSongsRecyclerViewAdapter.class.getSimpleName();
 
     public interface ItemClickListener {
-        public void onItemClick(int position);
+        void onItemClick(int position);
     }
 
     private ItemClickListener itemClickListener;
     private List<Song> dataset;
     private Context context;
     private int position;
+    private final OnStartDragListener dragStartListener;
 
-    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
-
-        public TextView title;
-        public TextView artist;
-        public TextView options;
-
-        public ViewHolder(View view) {
-            super(view);
-            this.title = (TextView) view.findViewById(R.id.songs_list_item_title);
-            this.artist = (TextView) view.findViewById(R.id.songs_list_item_artist);
-            this.options = (TextView) view.findViewById(R.id.options_icon);
-            view.setOnCreateContextMenuListener(this);
-        }
-
-        @Override
-        public void onCreateContextMenu(ContextMenu contextMenu, View view, ContextMenu.ContextMenuInfo contextMenuInfo) {
-
-            // groupId, itemId, order, titleRes
-            contextMenu.add(Menu.NONE, R.id.edit, Menu.NONE, R.string.context_menu_edit);
-            contextMenu.add(Menu.NONE, R.id.remove, Menu.NONE, R.string.context_menu_remove);
-
-        }
-    }
-
-    public SetlistSongsRecyclerViewAdapter(Context context, List<Song> dataset) {
+    public SetlistSongsRecyclerViewAdapter(Context context, List<Song> dataset, OnStartDragListener onStartDragListener) {
 
         this.context = context;
         this.dataset = dataset;
+        this.dragStartListener = onStartDragListener;
 
     }
+
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -78,6 +58,20 @@ public class SetlistSongsRecyclerViewAdapter extends RecyclerView.Adapter<Setlis
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
+
+        holder.itemView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+
+                if ( event.getAction() == MotionEvent.ACTION_DOWN) {
+                    dragStartListener.onStartDrag(holder);
+                }
+
+                return false;
+            }
+
+        });
+
 
         holder.options.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -94,6 +88,7 @@ public class SetlistSongsRecyclerViewAdapter extends RecyclerView.Adapter<Setlis
             }
         });
 
+        /*
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
@@ -101,6 +96,7 @@ public class SetlistSongsRecyclerViewAdapter extends RecyclerView.Adapter<Setlis
                 return false;
             }
         });
+        */
 
         if ( dataset != null || !dataset.isEmpty() ) {
 
@@ -137,5 +133,42 @@ public class SetlistSongsRecyclerViewAdapter extends RecyclerView.Adapter<Setlis
 
     public void setPosition(int position) {
         this.position = position;
+    }
+
+    //public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener, ItemTouchHelperViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder implements ItemTouchHelperViewHolder {
+        public TextView title;
+        public TextView artist;
+        public TextView options;
+
+        public ViewHolder(View view) {
+            super(view);
+            this.title = (TextView) view.findViewById(R.id.songs_list_item_title);
+            this.artist = (TextView) view.findViewById(R.id.songs_list_item_artist);
+            this.options = (TextView) view.findViewById(R.id.options_icon);
+            //view.setOnCreateContextMenuListener(this);
+        }
+
+        @Override
+        public void onItemSelected() {
+            itemView.setBackgroundColor(Color.LTGRAY);
+        }
+
+        @Override
+        public void onItemClear() {
+            itemView.setBackgroundColor(0);
+        }
+
+        /*
+        @Override
+        public void onCreateContextMenu(ContextMenu contextMenu, View view, ContextMenu.ContextMenuInfo contextMenuInfo) {
+
+            // groupId, itemId, order, titleRes
+            contextMenu.add(Menu.NONE, R.id.edit, Menu.NONE, R.string.context_menu_edit);
+            contextMenu.add(Menu.NONE, R.id.remove, Menu.NONE, R.string.context_menu_remove);
+
+        }
+        */
+
     }
 }

@@ -2,40 +2,31 @@ package setlistmanager.setlist;
 
 import android.app.DialogFragment;
 import android.arch.lifecycle.ViewModelProviders;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
-import android.view.ActionMode;
-import android.view.ContextMenu;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.CheckedTextView;
-import android.widget.EditText;
-import android.widget.ListView;
-import android.widget.TextView;
+
+import com.setlistmanager.R;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import io.reactivex.CompletableObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Action;
@@ -44,9 +35,10 @@ import io.reactivex.schedulers.Schedulers;
 import setlistmanager.Injection;
 import setlistmanager.ViewModelFactory;
 import setlistmanager.data.Setlist;
+import setlistmanager.helper.ItemTouchHelperAdapter;
+import setlistmanager.helper.OnStartDragListener;
+import setlistmanager.helper.SimpleItemTouchHelperCallback;
 import setlistmanager.util.ConfirmDialogFragment;
-
-import com.setlistmanager.R;
 
 public class SetlistsActivity extends AppCompatActivity implements ConfirmDialogFragment.ConfirmDialogListener, SetlistRecyclerViewAdapter.ItemClickListener {
 
@@ -75,6 +67,8 @@ public class SetlistsActivity extends AppCompatActivity implements ConfirmDialog
     private NavigationView navigationView;
 
     private ActionBarDrawerToggle drawerToggle;
+
+    private ItemTouchHelper itemTouchHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,9 +108,9 @@ public class SetlistsActivity extends AppCompatActivity implements ConfirmDialog
 
                 selectDrawerItem(item);
                 return true;
+
             }
         });
-
 
         viewModelFactory = Injection.provideViewModelFactory(this, this);
         setlistsViewModel = ViewModelProviders.of(this, viewModelFactory).get(SetlistsViewModel.class);

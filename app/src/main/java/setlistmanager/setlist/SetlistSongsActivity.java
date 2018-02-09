@@ -2,39 +2,29 @@ package setlistmanager.setlist;
 
 import android.app.DialogFragment;
 import android.arch.lifecycle.ViewModelProviders;
-import android.support.annotation.Nullable;
+import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.setlistmanager.R;
 
 import java.io.Serializable;
-import java.lang.reflect.Array;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import io.reactivex.Flowable;
-import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
@@ -43,10 +33,13 @@ import setlistmanager.ViewModelFactory;
 import setlistmanager.data.Setlist;
 import setlistmanager.data.Song;
 import setlistmanager.data.source.local.Converters;
+import setlistmanager.helper.ItemTouchHelperAdapter;
+import setlistmanager.helper.OnStartDragListener;
+import setlistmanager.helper.SimpleItemTouchHelperCallback;
 import setlistmanager.screenslide.ScreenSlideActivity;
 import setlistmanager.util.ConfirmDialogFragment;
 
-public class SetlistSongsActivity extends AppCompatActivity implements ConfirmDialogFragment.ConfirmDialogListener, SetlistSongsRecyclerViewAdapter.ItemClickListener {
+public class SetlistSongsActivity extends AppCompatActivity implements ConfirmDialogFragment.ConfirmDialogListener, SetlistSongsRecyclerViewAdapter.ItemClickListener, OnStartDragListener {
 
     private final String TAG = SetlistSongsActivity.class.getSimpleName();
 
@@ -73,6 +66,8 @@ public class SetlistSongsActivity extends AppCompatActivity implements ConfirmDi
 
     private FloatingActionButton floatingActionButton;
 
+    private ItemTouchHelper itemTouchHelper;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,9 +80,27 @@ public class SetlistSongsActivity extends AppCompatActivity implements ConfirmDi
         dataset = new ArrayList<>();
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         recyclerView.setHasFixedSize(true);
-        adapter = new SetlistSongsRecyclerViewAdapter(this, dataset);
+        adapter = new SetlistSongsRecyclerViewAdapter(this, dataset, this);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
+
+        ItemTouchHelperAdapter itemTouchHelperAdapter = new ItemTouchHelperAdapter() {
+            @Override
+            public boolean onItemMove(int fromPosition, int toPosition) {
+                Collections.swap(dataset, fromPosition, toPosition);
+                adapter.notifyItemMoved(fromPosition, toPosition);
+                return true;
+            }
+
+            @Override
+            public void onItemDismiss(int position) {
+
+            }
+        };
+
+        ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(itemTouchHelperAdapter);
+        itemTouchHelper = new ItemTouchHelper(callback);
+        itemTouchHelper.attachToRecyclerView(recyclerView);
 
         Bundle extras = getIntent().getExtras();
         setlistId = extras.getString(SETLIST_ID);
@@ -118,6 +131,11 @@ public class SetlistSongsActivity extends AppCompatActivity implements ConfirmDi
             }
         });
 
+    }
+
+    @Override
+    public void onStartDrag(RecyclerView.ViewHolder viewHolder) {
+        itemTouchHelper.startDrag(viewHolder);
     }
 
     @Override
