@@ -63,9 +63,11 @@ public class AddEditSongActivity extends AppCompatActivity {
 
     private Button cancelButton;
 
-    private Snackbar snackbarFail;
-
     private Toast toastSaveFailed;
+
+    private Toast toastSaveError;
+
+    private Toast toastFetchError;
 
     private Toast toastNotSupported;
 
@@ -109,8 +111,9 @@ public class AddEditSongActivity extends AppCompatActivity {
         saveButton = (Button) findViewById(R.id.button_save);
         cancelButton = (Button) findViewById(R.id.button_cancel);
 
-        snackbarFail = Snackbar.make(findViewById(R.id.addedit_song_layout), getResources().getText(R.string.addedit_song_title_cannot_be_emtpy), Snackbar.LENGTH_LONG);
         toastSaveFailed = Toast.makeText(getApplicationContext(), getResources().getText(R.string.addedit_save_failed), Toast.LENGTH_LONG);
+        toastSaveError = Toast.makeText(getApplicationContext(), getResources().getText(R.string.addedit_save_error), Toast.LENGTH_LONG);
+        toastFetchError = Toast.makeText(getApplicationContext(), getResources().getText(R.string.addedit_fetch_error), Toast.LENGTH_LONG);
 
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -201,7 +204,6 @@ public class AddEditSongActivity extends AppCompatActivity {
         String songFilepath = filepath.getText().toString();
 
         if ( songTitle == null || songTitle.isEmpty() || songFilepath == null || songFilepath.isEmpty() ) {
-            //snackbarFail.show();
             toastSaveFailed.show();
             return;
         }
@@ -254,9 +256,11 @@ public class AddEditSongActivity extends AppCompatActivity {
                         public void onError(Throwable e) {
 
                             Log.e(TAG, "Error fetching song", e);
-                        }
-                    });
+                            toastFetchError.show();
 
+                        }
+
+                    });
 
     }
 
@@ -281,6 +285,7 @@ public class AddEditSongActivity extends AppCompatActivity {
                             public void accept(Throwable throwable) throws Exception {
 
                                 Log.e(TAG, "Error saving song", throwable);
+                                toastSaveError.show();
 
                             }
                         })

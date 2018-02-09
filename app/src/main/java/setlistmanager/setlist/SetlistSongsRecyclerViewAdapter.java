@@ -38,11 +38,13 @@ public class SetlistSongsRecyclerViewAdapter extends RecyclerView.Adapter<Setlis
 
         public TextView title;
         public TextView artist;
+        public TextView options;
 
         public ViewHolder(View view) {
             super(view);
             this.title = (TextView) view.findViewById(R.id.songs_list_item_title);
             this.artist = (TextView) view.findViewById(R.id.songs_list_item_artist);
+            this.options = (TextView) view.findViewById(R.id.options_icon);
             view.setOnCreateContextMenuListener(this);
         }
 
@@ -76,6 +78,14 @@ public class SetlistSongsRecyclerViewAdapter extends RecyclerView.Adapter<Setlis
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
+
+        holder.options.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setPosition(position);
+                view.showContextMenu();
+            }
+        });
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override

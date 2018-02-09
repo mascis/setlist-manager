@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.setlistmanager.R;
 
@@ -55,7 +56,11 @@ public class AddEditSetlistActivity extends AppCompatActivity {
 
     private Button cancelButton;
 
-    private Snackbar snackbarFail;
+    private Toast toastSaveFailed;
+
+    private Toast toastSaveError;
+
+    private Toast toastFetchError;
 
     private String setlistId;
 
@@ -92,21 +97,23 @@ public class AddEditSetlistActivity extends AppCompatActivity {
         saveButton = (Button) findViewById(R.id.button_save);
         cancelButton = (Button) findViewById(R.id.button_cancel);
 
-        snackbarFail = Snackbar.make(findViewById(R.id.addedit_setlist_layout), getResources().getText(R.string.addedit_setlist_name_cannot_be_emtpy), Snackbar.LENGTH_LONG);
-
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 onSaveClicked();
             }
         });
-
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 onCancelClicked();
             }
         });
+
+        toastSaveFailed = Toast.makeText(getApplicationContext(), getResources().getText(R.string.addedit_setlist_name_cannot_be_emtpy), Toast.LENGTH_LONG);
+        toastSaveError = Toast.makeText(getApplicationContext(), getResources().getText(R.string.addedit_setlist_save_error), Toast.LENGTH_LONG);
+        toastFetchError = Toast.makeText(getApplicationContext(), getResources().getText(R.string.addedit_setlist_fetch_error), Toast.LENGTH_LONG);
+
     }
 
     @Override
@@ -130,8 +137,7 @@ public class AddEditSetlistActivity extends AppCompatActivity {
         String name = setlistName.getText().toString();
 
         if ( name == null || name.isEmpty() ) {
-            Log.e(TAG, "Name cannot be empty");
-            snackbarFail.show();
+            toastSaveFailed.show();
             return;
         }
 
@@ -191,8 +197,8 @@ public class AddEditSetlistActivity extends AppCompatActivity {
                     @Override
                     public void onError(Throwable e) {
 
-                        Log.e(TAG, "onError");
-                        Log.i(TAG, "error fetching setlist");
+                        Log.e(TAG, "Error fetching setlist", e);
+                        toastFetchError.show();
 
                     }
                 });
@@ -217,7 +223,11 @@ public class AddEditSetlistActivity extends AppCompatActivity {
                                 new Consumer<Throwable>() {
                                     @Override
                                     public void accept(Throwable throwable) throws Exception {
+
                                         Log.e(TAG, "Unable to add setlist", throwable);
+                                        toastSaveError.show();
+
+
                                     }
                                 }
                         ));
