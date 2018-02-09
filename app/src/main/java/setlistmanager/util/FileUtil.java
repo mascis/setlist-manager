@@ -25,6 +25,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 
@@ -238,7 +239,7 @@ public final class FileUtil {
             File file = new File(path);
 
             InputStream inputStream = new FileInputStream(file);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, "ISO-8859-1"));
             StringBuilder out = new StringBuilder();
             String newLine = System.getProperty("line.separator");
             String line;
