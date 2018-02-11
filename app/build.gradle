@@ -61,4 +61,6 @@ dependencies {
     implementation 'com.github.barteksc:android-pdf-viewer:2.8.2'
     // Doc, docx
     implementation files('libs/poishadow-all.jar')
+
+    compile "org.jetbrains.kotlin:kotlin-stdlib:1.1.51"
 }

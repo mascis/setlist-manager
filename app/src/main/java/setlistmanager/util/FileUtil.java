@@ -81,7 +81,12 @@ public final class FileUtil {
             } else if (isDownloadsDocument(uri)) {
 
                 final String id = DocumentsContract.getDocumentId(uri);
-                uri = ContentUris.withAppendedId(Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));
+
+                if ( isParseableLong(id) ) {
+                    uri = ContentUris.withAppendedId(Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));
+                } else {
+                    uri = Uri.parse(id);
+                }
 
             } else if (isMediaDocument(uri)) {
 
@@ -101,19 +106,14 @@ public final class FileUtil {
                         split[1]
                 };
 
-            } else if ( isGoogleDriveDocument(uri) ) {
-
-
-
-
-            }
+            } else if ( isGoogleDriveDocument(uri) ) {}
 
         }
 
         if ( "content".equalsIgnoreCase(uri.getScheme()) ) {
 
             String[] projection = {
-                    MediaStore.Images.Media.DATA
+                MediaStore.Images.Media.DATA
             };
 
             Cursor cursor = null;
@@ -134,13 +134,25 @@ public final class FileUtil {
 
             }
 
-        } else if ( "file".equalsIgnoreCase(uri.getScheme()) ) {
+        } else if ( "file".equalsIgnoreCase(uri.getScheme()) || "raw".equalsIgnoreCase(uri.getScheme())) {
 
             return uri.getPath();
 
         }
 
         return null;
+
+    }
+
+    private static boolean isParseableLong(String longStr) {
+
+        try {
+            Long.parseLong(longStr);
+        } catch (NumberFormatException e) {
+            return false;
+        }
+
+        return true;
 
     }
 
