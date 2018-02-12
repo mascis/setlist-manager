@@ -275,7 +275,7 @@ public class SetlistSongsActivity extends AppCompatActivity implements ConfirmDi
 
         try {
             song = dataset.get(getAdapterPosition());
-            //removeSongFromSetlist(song.getId());
+            removeSongFromSetlist(song.getId());
         } catch (Exception e) {
             Log.e(TAG, "Deleting song failed");
         }
@@ -289,75 +289,25 @@ public class SetlistSongsActivity extends AppCompatActivity implements ConfirmDi
 
     }
 
-    /*
-    private void removeSongFromSetlist( final String songId ) {
+    private void removeSongFromSetlist( String songId ) {
 
-        setlistSongsViewModel.getSetlist(setlistId)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<Setlist>() {
-                    @Override
-                    public void accept(Setlist setlist) throws Exception {
+        List<String> songList = setlist.getSongs();
+        List<String> updatedSongList = new ArrayList<>();
 
-                        if ( setlist != null ) {
+        for( String id : songList ) {
 
-                            List<String> songList = setlist.getSongs();
-                            List<String> updatedSongList = new ArrayList<>();
+            if ( !songId.equals(id) ) {
 
-                            for( String id : songList ) {
+                updatedSongList.add(id);
 
-                               if ( !songId.equals(id) ) {
+            }
 
-                                   updatedSongList.add(id);
+        }
 
-                               }
-
-                            }
-
-                            updateSetlistSongs(setlist, updatedSongList);
-
-                        }
-
-                    }
-                }, new Consumer<Throwable>() {
-                    @Override
-                    public void accept(Throwable throwable) throws Exception {
-
-                        Log.e(TAG, "Could not get setlist with id " + setlistId, throwable);
-
-                    }
-                });
+        // async update
 
 
     }
-
-    private void updateSetlistSongs(Setlist setlist, final List<String> updatedSongList) {
-
-        Log.i(TAG, "UPDATE SETLIST SONGS");
-
-        disposable.add(
-                setlistSongsViewModel.updateSetlistSongs(setlist, updatedSongList)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new Action() {
-                            @Override
-                            public void run() throws Exception {
-
-                                //getSetlistSongsById(updatedSongList);
-
-                            }
-                        }, new Consumer<Throwable>() {
-                            @Override
-                            public void accept(Throwable throwable) throws Exception {
-
-                                Log.e(TAG, "Error updating song list", throwable);
-
-                            }
-                        })
-        );
-
-    }
-    */
 
     private void reorderSetlistSongs() {
 
@@ -437,7 +387,10 @@ public class SetlistSongsActivity extends AppCompatActivity implements ConfirmDi
                         setlistSongsViewModel.getSongById(s).subscribe(new Consumer<Song>() {
                             @Override
                             public void accept(Song song) throws Exception {
+
                                 setlistSongs.add(song);
+
+
                             }
                         });
 

@@ -21,6 +21,7 @@
     <string name="confirm_dialog_delete_setlist_message">Are you sure you want to remove setlist</string>
     <string name="confirm_dialog_delete_song_title">Remove song</string>
     <string name="confirm_dialog_delete_song_message">Are you sure you want to remove song</string>
+    <string name="confirm_dialog_delete_song_message_note">NOTE! The song will also be removed from all setlists.</string>
     <string name="song_deleted_successfully">Song deleted successfully.</string>
     <string name="song_delete_failed">Failed to delete song.</string>
 

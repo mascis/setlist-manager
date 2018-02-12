@@ -3,6 +3,7 @@ package setlistmanager.song;
 import android.app.DialogFragment;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -34,6 +35,7 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import setlistmanager.Injection;
 import setlistmanager.ViewModelFactory;
+import setlistmanager.data.Setlist;
 import setlistmanager.data.Song;
 import setlistmanager.screenslide.ScreenSlideActivity;
 import setlistmanager.setlist.SetlistSongsRecyclerViewAdapter;
@@ -266,7 +268,8 @@ public class SongsActivity extends AppCompatActivity implements ConfirmDialogFra
         String title = getResources().getString(R.string.confirm_dialog_delete_song_title);
         String question = getResources().getString(R.string.confirm_dialog_delete_song_message);
         String songTitle = song.getTitle();
-        String message = question + " " + songTitle + "?";
+        String note = getResources().getString(R.string.confirm_dialog_delete_song_message_note);
+        String message = question + " " + songTitle + "? " + note;
 
         DialogFragment confirmDialog = ConfirmDialogFragment.instance(title, message);
         confirmDialog.show(getFragmentManager(), "ConfirmDialog");
@@ -280,6 +283,7 @@ public class SongsActivity extends AppCompatActivity implements ConfirmDialogFra
 
         try {
             song = dataset.get(getAdapterPosition());
+            deleteSongFromSetlists(song.getId());
             deleteSong(song.getId());
         } catch (Exception e) {
             Log.e(TAG, "Deleting song failed");
@@ -349,6 +353,56 @@ public class SongsActivity extends AppCompatActivity implements ConfirmDialogFra
 
     }
 
+    private void deleteSongFromSetlists(final String songId) {
+
+        disposable.add(
+                songsViewModel.getSetlists()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Consumer<List<Setlist>>() {
+                            @Override
+                            public void accept(List<Setlist> setlists) throws Exception {
+
+                                for ( Setlist setlist : setlists ) {
+
+                                    List<String> songIds = setlist.getSongs();
+
+                                    if ( songIds.contains(songId) ) {
+
+                                        List<String> updatedIds = new ArrayList<>();
+
+                                        for ( String id : songIds ) {
+
+                                            if ( !id.equals(songId) ) {
+                                                updatedIds.add(id);
+                                            }
+
+                                        }
+
+                                        List<Object> params = new ArrayList<>();
+                                        params.add(setlist);
+                                        params.add(updatedIds);
+                                        new UpdateAsyncTask().execute(params);
+
+                                    }
+
+                                }
+
+                            }
+                        }, new Consumer<Throwable>() {
+                            @Override
+                            public void accept(Throwable throwable) throws Exception {
+
+                            }
+                        }, new Action() {
+                            @Override
+                            public void run() throws Exception {
+
+                            }
+                        })
+        );
+
+    }
 
     private void deleteSong(String songId) {
 
@@ -384,5 +438,31 @@ public class SongsActivity extends AppCompatActivity implements ConfirmDialogFra
         super.onStop();
 
         disposable.clear();
+    }
+
+    private class UpdateAsyncTask extends AsyncTask<List<Object>, Void, Void> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+        }
+
+        @Override
+        protected Void doInBackground(List<Object>[] params) {
+
+            List<Object> list = params[0];
+
+            Setlist setlist = (Setlist)list.get(0);
+            List<String> songs = (List<String>) list.get(1);
+
+            songsViewModel.updateSetlistSongs(setlist, songs);
+
+            return null;
+        }
     }
 }

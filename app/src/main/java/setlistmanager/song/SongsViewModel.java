@@ -8,6 +8,7 @@ import java.util.List;
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
 import io.reactivex.functions.Action;
+import setlistmanager.data.Setlist;
 import setlistmanager.data.Song;
 import setlistmanager.data.source.local.LocalDataSource;
 
@@ -36,6 +37,19 @@ public class SongsViewModel extends ViewModel {
     public Flowable<List<Song>> getSongs() {
 
         return localDataSource.getSongs();
+
+    }
+
+    public Flowable<List<Setlist>> getSetlists() {
+
+        return localDataSource.getSetlists();
+
+    }
+
+    public void updateSetlistSongs(@NonNull Setlist setlist, @NonNull final List<String> songs) {
+
+        setlist.setSongs(songs);
+        localDataSource.updateSetlist(setlist);
 
     }
 
