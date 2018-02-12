@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import com.setlistmanager.R;
 
+import org.apache.commons.collections4.Get;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 
@@ -102,12 +103,14 @@ public class SetlistSongsActivity extends AppCompatActivity implements ConfirmDi
         ItemTouchHelperAdapter itemTouchHelperAdapter = new ItemTouchHelperAdapter() {
             @Override
             public boolean onItemMove(int fromPosition, int toPosition) {
+
                 Collections.swap(dataset, fromPosition, toPosition);
                 adapter.notifyItemMoved(fromPosition, toPosition);
 
                 reorderSetlistSongs();
 
-                return false;
+                return true;
+
             }
 
             @Override
@@ -183,7 +186,7 @@ public class SetlistSongsActivity extends AppCompatActivity implements ConfirmDi
                             @Override
                             public void accept(Setlist s) throws Exception {
                                 setlist = s;
-                                getSetlistSongsById(s.getSongs());
+                                new GetSongsAsyncTask().execute();
                             }
                         })
         );
@@ -272,7 +275,7 @@ public class SetlistSongsActivity extends AppCompatActivity implements ConfirmDi
 
         try {
             song = dataset.get(getAdapterPosition());
-            removeSongFromSetlist(song.getId());
+            //removeSongFromSetlist(song.getId());
         } catch (Exception e) {
             Log.e(TAG, "Deleting song failed");
         }
@@ -286,38 +289,7 @@ public class SetlistSongsActivity extends AppCompatActivity implements ConfirmDi
 
     }
 
-    private void getSetlistSongsById(final List<String> songIds) {
-
-        Log.i(TAG, "GET SETLIST SONGS BY ID");
-
-        if ( songIds == null && !songIds.isEmpty() ) {
-            return;
-        }
-
-        dataset.clear();
-
-        Observable.fromIterable(songIds).subscribe(new Consumer<String>() {
-            @Override
-            public void accept(final String s) throws Exception {
-
-                disposable.add(
-                        setlistSongsViewModel.getSongById(s).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<Song>() {
-                            @Override
-                            public void accept(Song song) throws Exception {
-
-                                dataset.add(song);
-                                adapter.notifyDataSetChanged();
-
-                            }
-                        })
-
-                );
-
-            }
-        });
-
-    }
-
+    /*
     private void removeSongFromSetlist( final String songId ) {
 
         setlistSongsViewModel.getSetlist(setlistId)
@@ -361,6 +333,8 @@ public class SetlistSongsActivity extends AppCompatActivity implements ConfirmDi
 
     private void updateSetlistSongs(Setlist setlist, final List<String> updatedSongList) {
 
+        Log.i(TAG, "UPDATE SETLIST SONGS");
+
         disposable.add(
                 setlistSongsViewModel.updateSetlistSongs(setlist, updatedSongList)
                         .subscribeOn(Schedulers.io())
@@ -369,7 +343,7 @@ public class SetlistSongsActivity extends AppCompatActivity implements ConfirmDi
                             @Override
                             public void run() throws Exception {
 
-                                getSetlistSongsById(updatedSongList);
+                                //getSetlistSongsById(updatedSongList);
 
                             }
                         }, new Consumer<Throwable>() {
@@ -383,6 +357,7 @@ public class SetlistSongsActivity extends AppCompatActivity implements ConfirmDi
         );
 
     }
+    */
 
     private void reorderSetlistSongs() {
 
@@ -430,6 +405,49 @@ public class SetlistSongsActivity extends AppCompatActivity implements ConfirmDi
             setlistSongsViewModel.reorderSetlistSongs(setlist, songs);
 
             return songs;
+        }
+    }
+
+    private class GetSongsAsyncTask extends AsyncTask<Setlist, Void, List<Song>> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            dataset.clear();
+        }
+
+        @Override
+        protected void onPostExecute(List<Song> songs) {
+            super.onPostExecute(songs);
+            dataset.addAll(songs);
+            adapter.notifyDataSetChanged();
+        }
+
+        @Override
+        protected List<Song> doInBackground(Setlist... setlists) {
+
+            final List<Song> setlistSongs = new ArrayList<>();
+
+            if ( setlist != null && setlist.getSongs() != null && !setlist.getSongs().isEmpty() ) {
+
+                Observable.fromIterable(setlist.getSongs()).subscribe(new Consumer<String>() {
+                    @Override
+                    public void accept(final String s) throws Exception {
+
+                        setlistSongsViewModel.getSongById(s).subscribe(new Consumer<Song>() {
+                            @Override
+                            public void accept(Song song) throws Exception {
+                                setlistSongs.add(song);
+                            }
+                        });
+
+                    }
+                });
+
+            }
+
+            return setlistSongs;
+
         }
     }
 

@@ -45,7 +45,6 @@ public class SetlistSongsViewModel extends ViewModel {
 
     }
 
-    /*
     public Flowable<List<Song>> getSetlistSongsById(@NonNull List<String> songIds) {
 
         if ( songIds == null || songIds.isEmpty() ) {
@@ -55,7 +54,6 @@ public class SetlistSongsViewModel extends ViewModel {
         return localDataSource.getSongsById(songIds);
 
     }
-    */
 
     public Single<Song> getSongById(@NonNull String songId) {
 
