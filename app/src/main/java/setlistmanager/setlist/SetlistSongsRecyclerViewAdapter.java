@@ -3,7 +3,9 @@ package setlistmanager.setlist;
 import android.content.Context;
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -135,8 +137,8 @@ public class SetlistSongsRecyclerViewAdapter extends RecyclerView.Adapter<Setlis
         this.position = position;
     }
 
-    //public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener, ItemTouchHelperViewHolder {
-    public static class ViewHolder extends RecyclerView.ViewHolder implements ItemTouchHelperViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener, ItemTouchHelperViewHolder {
+
         public TextView title;
         public TextView artist;
         public TextView options;
@@ -146,7 +148,7 @@ public class SetlistSongsRecyclerViewAdapter extends RecyclerView.Adapter<Setlis
             this.title = (TextView) view.findViewById(R.id.songs_list_item_title);
             this.artist = (TextView) view.findViewById(R.id.songs_list_item_artist);
             this.options = (TextView) view.findViewById(R.id.options_icon);
-            //view.setOnCreateContextMenuListener(this);
+            this.options.setOnCreateContextMenuListener(this);
         }
 
         @Override
@@ -159,7 +161,6 @@ public class SetlistSongsRecyclerViewAdapter extends RecyclerView.Adapter<Setlis
             itemView.setBackgroundColor(0);
         }
 
-        /*
         @Override
         public void onCreateContextMenu(ContextMenu contextMenu, View view, ContextMenu.ContextMenuInfo contextMenuInfo) {
 
@@ -168,7 +169,6 @@ public class SetlistSongsRecyclerViewAdapter extends RecyclerView.Adapter<Setlis
             contextMenu.add(Menu.NONE, R.id.remove, Menu.NONE, R.string.context_menu_remove);
 
         }
-        */
 
     }
 }
