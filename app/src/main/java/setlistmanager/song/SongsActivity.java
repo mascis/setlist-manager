@@ -1,7 +1,9 @@
 package setlistmanager.song;
 
 import android.app.DialogFragment;
+import android.app.SearchManager;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
@@ -20,6 +22,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.setlistmanager.R;
@@ -72,6 +75,8 @@ public class SongsActivity extends AppCompatActivity implements ConfirmDialogFra
     private Toast toastDeleteSuccessful;
 
     private Toast toastDeleteFailed;
+
+    private SearchView searchView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -193,14 +198,21 @@ public class SongsActivity extends AppCompatActivity implements ConfirmDialogFra
         }
     }
 
-    /*
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_nav_add, menu);
+        inflater.inflate(R.menu.options_menu, menu);
+
+        // Associate searchable configuration with the SearchView
+        SearchManager searchManager =
+                (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView =
+                (SearchView) menu.findItem(R.id.search).getActionView();
+        searchView.setSearchableInfo(
+                searchManager.getSearchableInfo(getComponentName()));
+
         return true;
     }
-    */
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

@@ -82,7 +82,7 @@ public class SetlistSongsActivity extends AppCompatActivity implements ConfirmDi
 
     private ItemTouchHelper itemTouchHelper;
 
-    private Toast reorderSuccess;
+    private Toast reorderStatus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,10 +104,12 @@ public class SetlistSongsActivity extends AppCompatActivity implements ConfirmDi
             @Override
             public boolean onItemMove(int fromPosition, int toPosition) {
 
-                Collections.swap(dataset, fromPosition, toPosition);
-                adapter.notifyItemMoved(fromPosition, toPosition);
+                if ( fromPosition != toPosition ) {
+                    Collections.swap(dataset, fromPosition, toPosition);
+                    adapter.notifyItemMoved(fromPosition, toPosition);
 
-                reorderSetlistSongs();
+                    reorderSetlistSongs();
+                }
 
                 return true;
 
@@ -152,7 +154,7 @@ public class SetlistSongsActivity extends AppCompatActivity implements ConfirmDi
             }
         });
 
-        reorderSuccess = Toast.makeText(getApplicationContext(), "Songs reordered successfully", Toast.LENGTH_SHORT);
+        reorderStatus = Toast.makeText(getApplicationContext(), getResources().getText(R.string.common_saving), Toast.LENGTH_SHORT);
 
     }
 
@@ -331,12 +333,15 @@ public class SetlistSongsActivity extends AppCompatActivity implements ConfirmDi
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            reorderStatus.setText(R.string.common_saving);
+            reorderStatus.show();
         }
 
         @Override
         protected void onPostExecute(List<String> list) {
             super.onPostExecute(list);
-            reorderSuccess.show();
+            reorderStatus.setText(R.string.common_saved);
+            reorderStatus.show();
         }
 
         @Override

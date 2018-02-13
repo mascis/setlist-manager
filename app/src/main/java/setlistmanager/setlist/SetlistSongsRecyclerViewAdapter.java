@@ -53,7 +53,7 @@ public class SetlistSongsRecyclerViewAdapter extends RecyclerView.Adapter<Setlis
         itemClickListener = (ItemClickListener) parent.getContext();
 
         View textView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.songs_list_item, parent, false);
+                .inflate(R.layout.setlist_songs_list_item, parent, false);
 
         return new ViewHolder(textView);
     }
@@ -61,7 +61,7 @@ public class SetlistSongsRecyclerViewAdapter extends RecyclerView.Adapter<Setlis
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
 
-        holder.itemView.setOnTouchListener(new View.OnTouchListener() {
+        holder.dragHandle.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
 
@@ -73,7 +73,6 @@ public class SetlistSongsRecyclerViewAdapter extends RecyclerView.Adapter<Setlis
             }
 
         });
-
 
         holder.options.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -90,7 +89,6 @@ public class SetlistSongsRecyclerViewAdapter extends RecyclerView.Adapter<Setlis
             }
         });
 
-        /*
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
@@ -98,7 +96,6 @@ public class SetlistSongsRecyclerViewAdapter extends RecyclerView.Adapter<Setlis
                 return false;
             }
         });
-        */
 
         if ( dataset != null || !dataset.isEmpty() ) {
 
@@ -142,13 +139,15 @@ public class SetlistSongsRecyclerViewAdapter extends RecyclerView.Adapter<Setlis
         public TextView title;
         public TextView artist;
         public TextView options;
+        public TextView dragHandle;
 
         public ViewHolder(View view) {
             super(view);
+            this.dragHandle = (TextView) view.findViewById(R.id.songs_list_item_drag_handle);
             this.title = (TextView) view.findViewById(R.id.songs_list_item_title);
             this.artist = (TextView) view.findViewById(R.id.songs_list_item_artist);
             this.options = (TextView) view.findViewById(R.id.options_icon);
-            this.options.setOnCreateContextMenuListener(this);
+            this.itemView.setOnCreateContextMenuListener(this);
         }
 
         @Override
