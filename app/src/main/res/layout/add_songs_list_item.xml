@@ -11,13 +11,13 @@
     android:background="@drawable/list_item_divider">
 
     <TextView
-        android:id="@+id/add_songs_list_item_artist"
+        android:id="@+id/add_songs_list_item_title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1" />
 
     <TextView
-        android:id="@+id/add_songs_list_item_title"
+        android:id="@+id/add_songs_list_item_artist"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1" />
