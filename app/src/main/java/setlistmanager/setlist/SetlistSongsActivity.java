@@ -306,8 +306,11 @@ public class SetlistSongsActivity extends AppCompatActivity implements ConfirmDi
 
         }
 
-        // async update
+        List<Object> params = new ArrayList<>();
+        params.add(setlist);
+        params.add(updatedSongList);
 
+        new RemoveAsyncTask().execute(params);
 
     }
 
@@ -357,10 +360,16 @@ public class SetlistSongsActivity extends AppCompatActivity implements ConfirmDi
             Setlist setlist = (Setlist)list.get(0);
             List<String> songs = (List<String>) list.get(1);
 
-            setlistSongsViewModel.reorderSetlistSongs(setlist, songs);
+            setlistSongsViewModel.updateSetlistSongs(setlist, songs);
 
             return songs;
         }
+    }
+
+    private void updateSongList() {
+
+        new GetSongsAsyncTask().execute();
+
     }
 
     private class GetSongsAsyncTask extends AsyncTask<Setlist, Void, List<Song>> {
@@ -406,6 +415,34 @@ public class SetlistSongsActivity extends AppCompatActivity implements ConfirmDi
 
             return setlistSongs;
 
+        }
+    }
+
+    private class RemoveAsyncTask extends AsyncTask<List<Object>, Void, Void> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            dataset.clear();
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            updateSongList();
+        }
+
+        @Override
+        protected Void doInBackground(List<Object>[] params) {
+
+            List<Object> list = params[0];
+
+            Setlist setlist = (Setlist)list.get(0);
+            List<String> songs = (List<String>) list.get(1);
+
+            setlistSongsViewModel.updateSetlistSongs(setlist, songs);
+
+            return null;
         }
     }
 

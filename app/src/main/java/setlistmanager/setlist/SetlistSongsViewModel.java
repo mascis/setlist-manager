@@ -68,26 +68,10 @@ public class SetlistSongsViewModel extends ViewModel {
 
     }
 
-    public Completable updateSetlistSongs(@NonNull final Setlist setlist, @Nullable final List<String> songs) {
+    public void updateSetlistSongs(@NonNull final Setlist setlist, @Nullable final List<String> songs) {
 
-        return Completable.fromAction(new Action() {
-            @Override
-            public void run() throws Exception {
-
-                setlist.setSongs(songs);
-
-                localDataSource.updateSetlist(setlist);
-
-            }
-        });
-
-    }
-
-    public void reorderSetlistSongs(@NonNull final Setlist setlist, @Nullable final List<String> songs) {
-
-            setlist.setSongs(songs);
-
-            localDataSource.updateSetlist(setlist);
+        setlist.setSongs(songs);
+        localDataSource.updateSetlist(setlist);
 
     }
 

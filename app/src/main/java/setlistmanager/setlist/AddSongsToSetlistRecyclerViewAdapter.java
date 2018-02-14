@@ -2,17 +2,21 @@ package setlistmanager.setlist;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import com.setlistmanager.R;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import setlistmanager.data.Song;
 
@@ -28,6 +32,7 @@ public class AddSongsToSetlistRecyclerViewAdapter extends RecyclerView.Adapter<A
     private List<Song> dataset;
     private Context context;
     private int position;
+    private List<String> selectedSongs = new ArrayList<>();
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
 
@@ -66,12 +71,29 @@ public class AddSongsToSetlistRecyclerViewAdapter extends RecyclerView.Adapter<A
                 .inflate(R.layout.add_songs_list_item, parent, false);
 
         return new ViewHolder(itemView);
+
     }
 
-
-
     @Override
-    public void onBindViewHolder(final ViewHolder holder, int position) {
+    public void onBindViewHolder(final ViewHolder holder, final int position) {
+
+        holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
+
+                if ( checked ) {
+
+                    setSelected(dataset.get(position).getId());
+
+                } else {
+
+                    removeSelected(dataset.get(position).getId());
+
+                }
+
+            }
+
+        });
 
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -95,6 +117,10 @@ public class AddSongsToSetlistRecyclerViewAdapter extends RecyclerView.Adapter<A
                 holder.artist.setText(artist);
             }
 
+            if ( song.getId() != null ) {
+                holder.checkBox.setChecked(isSelected(song.getId()));
+            }
+
         }
     }
 
@@ -112,6 +138,7 @@ public class AddSongsToSetlistRecyclerViewAdapter extends RecyclerView.Adapter<A
     @Override
     public void onViewRecycled(ViewHolder holder) {
         holder.itemView.setOnLongClickListener(null);
+        holder.checkBox.setOnCheckedChangeListener(null);
         super.onViewRecycled(holder);
     }
 
@@ -122,4 +149,39 @@ public class AddSongsToSetlistRecyclerViewAdapter extends RecyclerView.Adapter<A
     public void setPosition(int position) {
         this.position = position;
     }
+
+    public void setSelectedSongs(List<String> selectedSongs ) {
+        this.selectedSongs = selectedSongs;
+    }
+
+    public List<String> getSelectedSongs() {
+        return this.selectedSongs;
+    }
+
+    private void setSelected(String songId) {
+
+        if ( !isSelected(songId)) {
+            this.selectedSongs.add(songId);
+        }
+
+    }
+
+    private void removeSelected(String songId) {
+
+        if ( isSelected(songId) ) {
+            this.selectedSongs.remove(songId);
+        }
+
+    }
+
+    private boolean isSelected( String songId ) {
+
+        if ( this.selectedSongs.contains(songId) ) {
+            return true;
+        }
+
+        return false;
+
+    }
+
 }

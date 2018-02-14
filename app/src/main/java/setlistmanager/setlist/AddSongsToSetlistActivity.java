@@ -1,6 +1,8 @@
 package setlistmanager.setlist;
 
+import android.app.SearchManager;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -8,8 +10,11 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.SearchView;
 
 import com.setlistmanager.R;
 
@@ -47,6 +52,8 @@ public class AddSongsToSetlistActivity extends AppCompatActivity {
 
     private List<Song> dataset;
 
+    private List<Song> allSongs;
+
     private RecyclerView recyclerView;
 
     private RecyclerView.Adapter adapter;
@@ -81,6 +88,7 @@ public class AddSongsToSetlistActivity extends AppCompatActivity {
         addSongsToSetlistViewModel = ViewModelProviders.of(this, viewModelFactory).get(AddSongsToSetlistViewModel.class);
         addSongsToSetlistNavigator = addSongsToSetlistViewModel.getAddSongsToSetlistNavigator();
 
+        allSongs = new ArrayList<>();
         dataset = new ArrayList<>();
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         recyclerView.setHasFixedSize(true);
@@ -117,25 +125,6 @@ public class AddSongsToSetlistActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         setupSongList();
-    }
-
-    private int getAdapterPosition() {
-
-        int position = -1;
-
-        try {
-
-            AddSongsToSetlistRecyclerViewAdapter adapter = (AddSongsToSetlistRecyclerViewAdapter) recyclerView.getAdapter();
-            position = adapter.getPosition();
-
-        } catch (Exception e) {
-
-            Log.e(TAG, "Error getting setlist list item");
-            e.printStackTrace();
-
-        }
-
-        return position;
     }
 
     private void getSetlist(String setlistId) {
@@ -179,9 +168,11 @@ public class AddSongsToSetlistActivity extends AppCompatActivity {
                             @Override
                             public void accept(List<Song> songs) throws Exception {
 
+                                allSongs.clear();
                                 dataset.clear();
 
                                 if ( songs != null ) {
+                                    allSongs.addAll(songs);
                                     dataset.addAll(songs);
                                 }
 
@@ -210,20 +201,22 @@ public class AddSongsToSetlistActivity extends AppCompatActivity {
 
     private List<String> getSelectedSongs() {
 
-        AddSongsToSetlistRecyclerViewAdapter adapter = (AddSongsToSetlistRecyclerViewAdapter) recyclerView.getAdapter();
-
         List<String> selectedSongs = new ArrayList<>();
 
-        for( int i = 0; i < adapter.getItemCount(); i++ ) {
+        try {
 
-            AddSongsToSetlistRecyclerViewAdapter.ViewHolder holder = (AddSongsToSetlistRecyclerViewAdapter.ViewHolder) recyclerView.getChildViewHolder(recyclerView.getChildAt(i));
+            AddSongsToSetlistRecyclerViewAdapter adapter = (AddSongsToSetlistRecyclerViewAdapter) recyclerView.getAdapter();
+            selectedSongs = adapter.getSelectedSongs();
 
-            if ( holder.checkBox.isChecked() ) {
-                selectedSongs.add(dataset.get(i).getId());
-            }
+        } catch (Exception e) {
+
+            Log.e(TAG, "Error getting setlist list item");
+            e.printStackTrace();
+
         }
 
         return selectedSongs;
+
     }
 
     private void addSongsToSetlist(final String setlistId) {
@@ -272,5 +265,63 @@ public class AddSongsToSetlistActivity extends AppCompatActivity {
         super.onStop();
 
         disposable.clear();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.options_menu, menu);
+
+        // Associate searchable configuration with the SearchView
+        SearchManager searchManager =
+                (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView =
+                (SearchView) menu.findItem(R.id.search).getActionView();
+        searchView.setSearchableInfo(
+                searchManager.getSearchableInfo(getComponentName()));
+
+        searchView.setSubmitButtonEnabled(true);
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                filterSongs(s);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                filterSongs(s);
+                return false;
+            }
+        });
+
+        return true;
+
+    }
+
+    private void filterSongs(String str) {
+
+        List<Song> filteredSongs = new ArrayList<Song>();
+        String searchableString = str.toString();
+
+        for ( Song song : allSongs ) {
+
+            String title = song.getTitle().toLowerCase();
+            String artist = song.getArtist().toLowerCase();
+
+            if ( title.contains(searchableString) || artist.contains(searchableString) ) {
+
+                filteredSongs.add(song);
+
+            }
+
+        }
+
+        dataset.clear();
+        dataset.addAll(filteredSongs);
+        adapter.notifyDataSetChanged();
+
     }
 }
