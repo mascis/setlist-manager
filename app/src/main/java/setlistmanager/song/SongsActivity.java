@@ -4,8 +4,8 @@ import android.app.DialogFragment;
 import android.app.SearchManager;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
-import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -13,7 +13,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -41,7 +40,6 @@ import setlistmanager.ViewModelFactory;
 import setlistmanager.data.Setlist;
 import setlistmanager.data.Song;
 import setlistmanager.screenslide.ScreenSlideActivity;
-import setlistmanager.setlist.SetlistSongsRecyclerViewAdapter;
 import setlistmanager.util.ConfirmDialogFragment;
 
 public class SongsActivity extends AppCompatActivity implements ConfirmDialogFragment.ConfirmDialogListener, SongRecyclerViewAdapter.ItemClickListener {
@@ -62,9 +60,9 @@ public class SongsActivity extends AppCompatActivity implements ConfirmDialogFra
 
     private RecyclerView.Adapter adapter;
 
-    private RecyclerView.LayoutManager layoutManager;
-
     private List<Song> dataset;
+
+    private List<Song> allSongs;
 
     private DrawerLayout drawerLayout;
 
@@ -75,8 +73,6 @@ public class SongsActivity extends AppCompatActivity implements ConfirmDialogFra
     private Toast toastDeleteSuccessful;
 
     private Toast toastDeleteFailed;
-
-    private SearchView searchView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -135,6 +131,7 @@ public class SongsActivity extends AppCompatActivity implements ConfirmDialogFra
         toastDeleteSuccessful = Toast.makeText(getApplicationContext(), getResources().getText(R.string.song_deleted_successfully), Toast.LENGTH_LONG);
         toastDeleteFailed = Toast.makeText(getApplicationContext(), getResources().getText(R.string.song_deleted_successfully), Toast.LENGTH_LONG);
 
+        allSongs = new ArrayList<>();
         dataset = new ArrayList<>();
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         recyclerView.setHasFixedSize(true);
@@ -159,15 +156,6 @@ public class SongsActivity extends AppCompatActivity implements ConfirmDialogFra
     public void onItemClick(int position) {
 
         toScreenSlide(position, false);
-        /*
-        Bundle bundle = new Bundle();
-
-        bundle.putString(ScreenSlideActivity.EXTRA_START_POSITION, String.valueOf(position));
-        bundle.putString(ScreenSlideActivity.EXTRA_NUM_PAGES, String.valueOf(dataset.size()));
-        bundle.putSerializable(ScreenSlideActivity.EXTRA_NUM_ITEMS, (Serializable) dataset);
-
-        songsNavigator.toScreenSlider(bundle);
-        */
 
     }
 
@@ -200,6 +188,7 @@ public class SongsActivity extends AppCompatActivity implements ConfirmDialogFra
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.options_menu, menu);
 
@@ -211,7 +200,48 @@ public class SongsActivity extends AppCompatActivity implements ConfirmDialogFra
         searchView.setSearchableInfo(
                 searchManager.getSearchableInfo(getComponentName()));
 
+        searchView.setSubmitButtonEnabled(true);
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                filterSongs(s);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                filterSongs(s);
+                return false;
+            }
+        });
+
         return true;
+
+    }
+
+    private void filterSongs(String str) {
+
+        List<Song> filteredSongs = new ArrayList<Song>();
+        String searchableString = str.toString();
+
+        for ( Song song : allSongs ) {
+
+            String title = song.getTitle().toLowerCase();
+            String artist = song.getArtist().toLowerCase();
+
+            if ( title.contains(searchableString) || artist.contains(searchableString) ) {
+
+                filteredSongs.add(song);
+
+            }
+
+        }
+
+        dataset.clear();
+        dataset.addAll(filteredSongs);
+        adapter.notifyDataSetChanged();
+
     }
 
     @Override
@@ -346,6 +376,8 @@ public class SongsActivity extends AppCompatActivity implements ConfirmDialogFra
                         @Override
                         public void accept(List<Song> songs) throws Exception {
 
+                            allSongs.clear();
+                            allSongs.addAll(songs);
                             dataset.clear();
                             dataset.addAll(songs);
                             adapter.notifyDataSetChanged();
