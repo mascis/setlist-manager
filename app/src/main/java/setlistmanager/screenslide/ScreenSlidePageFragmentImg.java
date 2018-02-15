@@ -37,6 +37,7 @@ public class ScreenSlidePageFragmentImg extends Fragment {
 
         imageView.setImageBitmap(BitmapFactory.decodeFile(getArguments().getString("pathName")));
 
+
         return imgView;
     }
 

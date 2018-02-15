@@ -165,6 +165,7 @@ public class SetlistSongsRecyclerViewAdapter extends RecyclerView.Adapter<Setlis
 
             // groupId, itemId, order, titleRes
             contextMenu.add(Menu.NONE, R.id.edit, Menu.NONE, R.string.context_menu_edit);
+            contextMenu.add(Menu.NONE, R.id.open, Menu.NONE, R.string.context_menu_open);
             contextMenu.add(Menu.NONE, R.id.remove, Menu.NONE, R.string.context_menu_remove);
 
         }

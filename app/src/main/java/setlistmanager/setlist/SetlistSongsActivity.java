@@ -215,8 +215,7 @@ public class SetlistSongsActivity extends AppCompatActivity implements ConfirmDi
 
     }
 
-    @Override
-    public void onItemClick(int position) {
+    private void toScreenSlide(int position) {
 
         Bundle bundle = new Bundle();
 
@@ -225,6 +224,13 @@ public class SetlistSongsActivity extends AppCompatActivity implements ConfirmDi
         bundle.putSerializable(ScreenSlideActivity.EXTRA_NUM_ITEMS, (Serializable) dataset);
 
         setlistSongsNavigator.toScreenSlider(bundle);
+
+    }
+
+    @Override
+    public void onItemClick(int position) {
+
+        toScreenSlide(position);
 
     }
 
@@ -246,6 +252,7 @@ public class SetlistSongsActivity extends AppCompatActivity implements ConfirmDi
                 return true;
 
             case R.id.open:
+                toScreenSlide(position);
                 return true;
 
             case R.id.remove:

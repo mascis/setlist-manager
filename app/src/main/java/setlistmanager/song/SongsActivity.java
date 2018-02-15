@@ -155,7 +155,7 @@ public class SongsActivity extends AppCompatActivity implements ConfirmDialogFra
     @Override
     public void onItemClick(int position) {
 
-        toScreenSlide(position, false);
+        toScreenSlide(position);
 
     }
 
@@ -292,7 +292,7 @@ public class SongsActivity extends AppCompatActivity implements ConfirmDialogFra
                 return true;
 
             case R.id.open:
-                toScreenSlide(position, true);
+                toScreenSlide(position);
                 return true;
 
             case R.id.remove:
@@ -341,25 +341,13 @@ public class SongsActivity extends AppCompatActivity implements ConfirmDialogFra
 
     }
 
-    private void toScreenSlide(int position, boolean single) {
+    private void toScreenSlide(int position) {
 
         Bundle bundle = new Bundle();
 
-        if ( single ) {
-
-            bundle.putString(ScreenSlideActivity.EXTRA_START_POSITION, "0");
-            bundle.putString(ScreenSlideActivity.EXTRA_NUM_PAGES, "1");
-            List<Song> song = new ArrayList<>();
-            song.add(dataset.get(position));
-            bundle.putSerializable(ScreenSlideActivity.EXTRA_NUM_ITEMS, (Serializable) song);
-
-        } else {
-
-            bundle.putString(ScreenSlideActivity.EXTRA_START_POSITION, String.valueOf(position));
-            bundle.putString(ScreenSlideActivity.EXTRA_NUM_PAGES, String.valueOf(dataset.size()));
-            bundle.putSerializable(ScreenSlideActivity.EXTRA_NUM_ITEMS, (Serializable) dataset);
-
-        }
+        bundle.putString(ScreenSlideActivity.EXTRA_START_POSITION, String.valueOf(position));
+        bundle.putString(ScreenSlideActivity.EXTRA_NUM_PAGES, String.valueOf(dataset.size()));
+        bundle.putSerializable(ScreenSlideActivity.EXTRA_NUM_ITEMS, (Serializable) dataset);
 
         songsNavigator.toScreenSlider(bundle);
 
