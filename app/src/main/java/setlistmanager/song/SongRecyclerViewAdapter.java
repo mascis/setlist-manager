@@ -1,5 +1,6 @@
 package setlistmanager.song;
 
+import android.content.ClipData;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -8,9 +9,12 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.TextView;
 
 import com.setlistmanager.R;
+
+import org.apache.xmlbeans.impl.xb.xsdschema.BlockSet;
 
 import java.util.List;
 
@@ -26,7 +30,7 @@ public class SongRecyclerViewAdapter extends RecyclerView.Adapter<SongRecyclerVi
     private static final String TAG = SongRecyclerViewAdapter.class.getSimpleName();
 
     public interface ItemClickListener {
-        public void onItemClick(int position);
+        void onItemClick(int position);
     }
 
     private ItemClickListener itemClickListener;
@@ -46,7 +50,6 @@ public class SongRecyclerViewAdapter extends RecyclerView.Adapter<SongRecyclerVi
             this.artist = (TextView) view.findViewById(R.id.songs_list_item_artist);
             this.options = (TextView) view.findViewById(R.id.options_icon);
             view.setOnCreateContextMenuListener(this);
-
         }
 
         @Override
@@ -58,19 +61,19 @@ public class SongRecyclerViewAdapter extends RecyclerView.Adapter<SongRecyclerVi
             contextMenu.add(Menu.NONE, R.id.remove, Menu.NONE, R.string.context_menu_remove);
 
         }
+
     }
 
-    public SongRecyclerViewAdapter(Context context, List<Song> dataset) {
+    public SongRecyclerViewAdapter(Context context, List<Song> dataset, ItemClickListener itemClickListener) {
 
         this.context = context;
         this.dataset = dataset;
+        this.itemClickListener = itemClickListener;
 
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-
-        itemClickListener = (ItemClickListener) parent.getContext();
 
         View textView = LayoutInflater.from(parent.getContext())
         .inflate(R.layout.songs_list_item, parent, false);
@@ -92,7 +95,7 @@ public class SongRecyclerViewAdapter extends RecyclerView.Adapter<SongRecyclerVi
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-            itemClickListener.onItemClick(position);
+                itemClickListener.onItemClick(position);
             }
         });
 
@@ -130,6 +133,8 @@ public class SongRecyclerViewAdapter extends RecyclerView.Adapter<SongRecyclerVi
     @Override
     public void onViewRecycled(ViewHolder holder) {
         holder.itemView.setOnLongClickListener(null);
+        holder.options.setOnClickListener(null);
+        holder.itemView.setOnClickListener(null);
         super.onViewRecycled(holder);
     }
 

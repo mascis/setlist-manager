@@ -11,18 +11,22 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-        <activity android:name="setlistmanager.setlist.SetlistsActivity">
+        <activity android:name="setlistmanager.setlist.SetlistsActivity"></activity>
+        <activity android:name="setlistmanager.setlist.AddEditSetlistActivity" />
+        <activity android:name="setlistmanager.song.SongsActivity" />
+        <activity android:name="setlistmanager.song.AddEditSongActivity" />
+        <activity android:name="setlistmanager.setlist.SetlistSongsActivity" />
+        <activity android:name="setlistmanager.setlist.AddSongsToSetlistActivity" />
+        <activity android:name="setlistmanager.screenslide.ScreenSlideActivity" />
+        <activity
+            android:name="setlistmanager.main.MainActivity"
+            android:label="@string/title_activity_main"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="setlistmanager.setlist.AddEditSetlistActivity" />
-        <activity android:name="setlistmanager.song.SongsActivity"></activity>
-        <activity android:name="setlistmanager.song.AddEditSongActivity" />
-        <activity android:name="setlistmanager.setlist.SetlistSongsActivity" />
-        <activity android:name="setlistmanager.setlist.AddSongsToSetlistActivity" />
-        <activity android:name="setlistmanager.screenslide.ScreenSlideActivity" />
     </application>
 
 </manifest>

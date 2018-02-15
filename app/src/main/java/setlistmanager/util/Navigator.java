@@ -43,6 +43,8 @@ public class Navigator implements BaseNavigator {
 
     }
 
+
+
     @Override
     public void startActivityForResult(Class clazz, int requestcode) {
 

@@ -5,6 +5,9 @@ import android.arch.lifecycle.ViewModelProvider;
 import android.support.annotation.NonNull;
 
 import setlistmanager.data.source.local.LocalDataSource;
+import setlistmanager.main.MainActivity;
+import setlistmanager.main.MainActivityNavigator;
+import setlistmanager.main.MainActivityViewModel;
 import setlistmanager.setlist.AddEditSetlistNavigator;
 import setlistmanager.setlist.AddEditSetlistViewModel;
 import setlistmanager.setlist.AddSongsToSetlistNavigator;
@@ -69,8 +72,14 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
             AddSongsToSetlistNavigator addSongsToSetlistNavigator = new AddSongsToSetlistNavigator(baseNavigator);
             return (T) new AddSongsToSetlistViewModel( localDataSource, addSongsToSetlistNavigator );
 
+        } else if ( modelClass.isAssignableFrom(MainActivityViewModel.class) ) {
+
+            MainActivityNavigator mainActivityNavigator = new MainActivityNavigator(baseNavigator);
+            return (T) new MainActivityViewModel( localDataSource, mainActivityNavigator );
+
         }
 
         throw new IllegalArgumentException("Unknown ViewModel class");
+
     }
 }

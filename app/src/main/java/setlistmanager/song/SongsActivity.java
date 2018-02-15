@@ -135,7 +135,7 @@ public class SongsActivity extends AppCompatActivity implements ConfirmDialogFra
         dataset = new ArrayList<>();
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         recyclerView.setHasFixedSize(true);
-        adapter = new SongRecyclerViewAdapter(this, dataset);
+        adapter = new SongRecyclerViewAdapter(this, dataset, this);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
     }
