@@ -22,7 +22,7 @@ import java.util.List;
 import setlistmanager.data.Song;
 import setlistmanager.util.FileUtil;
 
-public class ScreenSlideActivity extends FragmentActivity {
+public class ScreenSlideActivity extends FragmentActivity implements OnExitListener {
 
     private static final String TAG = ScreenSlideActivity.class.getSimpleName();
 
@@ -253,4 +253,8 @@ public class ScreenSlideActivity extends FragmentActivity {
 
     }
 
+    @Override
+    public void onExit() {
+        finish();
+    }
 }

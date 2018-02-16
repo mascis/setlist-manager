@@ -350,13 +350,11 @@ public class MainActivity extends AppCompatActivity implements SetlistsFragment.
 
     @Override
     public void onDataChanged() {
-        Log.i(TAG, "onDataChanged...");
         new GetSetlistsAsyncTask().execute();
     }
 
     @Override
     public void onSongsDataChanged() {
-        Log.i(TAG, "onSongsDataChanged...");
         new GetSongsAsyncTask().execute();
     }
 }

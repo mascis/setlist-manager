@@ -6,15 +6,22 @@ import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.setlistmanager.R;
+
+import org.w3c.dom.Text;
 
 import setlistmanager.data.Song;
 import setlistmanager.util.FileUtil;
@@ -27,6 +34,8 @@ public class ScreenSlidePageFragmentImg extends Fragment {
 
     private static final String TAG = ScreenSlidePageFragmentImg.class.getSimpleName();
 
+    private OnExitListener onExitListener;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -37,8 +46,47 @@ public class ScreenSlidePageFragmentImg extends Fragment {
 
         imageView.setImageBitmap(BitmapFactory.decodeFile(getArguments().getString("pathName")));
 
+        onExitListener = (OnExitListener) getActivity();
+
+        final LinearLayout exitContainer = (LinearLayout) imgView.findViewById(R.id.exit_container);
+        final TextView exitIcon = (TextView) imgView.findViewById(R.id.exit_icon);
+
+        final Handler handler = new Handler();
+        final Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+
+                exitIcon.setVisibility(View.GONE);
+
+            }
+
+        };
+
+        imgView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+
+                if ( motionEvent.getAction() == MotionEvent.ACTION_DOWN ) {
+
+                    exitIcon.setVisibility(View.VISIBLE);
+                    handler.postDelayed(runnable, 5000);
+
+                }
+
+                return false;
+
+            }
+        });
+
+        exitIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onExitListener.onExit();
+            }
+        });
 
         return imgView;
+
     }
 
     public static ScreenSlidePageFragmentImg newInstance(Context context, String uriString) {
@@ -56,6 +104,5 @@ public class ScreenSlidePageFragmentImg extends Fragment {
         return fragmentImg;
 
     }
-
 
 }

@@ -2,13 +2,46 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/content"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent">
 
-    <ImageView
-        android:id="@+id/imageView"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:adjustViewBounds="true"
-        />
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentTop="true"
+            android:layout_below="@id/exit_container"/>
+
+        <LinearLayout
+            android:id="@+id/exit_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimaryDark">
+
+            <TextView
+                android:id="@+id/exit_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:drawableEnd="@drawable/ic_clear_white_24dp"
+                android:drawableRight="@drawable/ic_clear_white_24dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="top"
+                android:visibility="gone"
+                android:layout_gravity="right" />
+
+        </LinearLayout>
+
+
+
+    </RelativeLayout>
+
+
 
 </ScrollView>

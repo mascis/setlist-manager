@@ -4,11 +4,39 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-    <TextView style="?android:textAppearanceMedium"
-        android:id="@+id/txtView"
-        android:padding="16dp"
-        android:lineSpacingMultiplier="1.2"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content">
+
+        <TextView
+            style="?android:textAppearanceMedium"
+            android:id="@+id/txtView"
+            android:padding="16dp"
+            android:lineSpacingMultiplier="1.2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+            <LinearLayout
+                android:id="@+id/exit_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/colorPrimaryDark">
+
+                <TextView
+                    android:id="@+id/exit_icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:drawableEnd="@drawable/ic_clear_white_24dp"
+                    android:drawableRight="@drawable/ic_clear_white_24dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="top"
+                    android:visibility="gone"
+                    android:layout_gravity="right" />
+
+            </LinearLayout>
+
+    </RelativeLayout>
 
 </ScrollView>
