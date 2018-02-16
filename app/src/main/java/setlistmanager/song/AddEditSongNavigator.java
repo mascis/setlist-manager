@@ -1,5 +1,7 @@
 package setlistmanager.song;
 
+import android.app.Activity;
+
 import setlistmanager.main.MainActivity;
 import setlistmanager.setlist.SetlistsActivity;
 import setlistmanager.util.BaseNavigator;
@@ -18,7 +20,7 @@ public class AddEditSongNavigator {
 
     void onSongSaved() {
 
-        navigationProvider.finishActivity();
+        navigationProvider.finishActivityWithResult(AddEditSongActivity.RESULT_CODE_DATA_CHANGED);
 
     }
 

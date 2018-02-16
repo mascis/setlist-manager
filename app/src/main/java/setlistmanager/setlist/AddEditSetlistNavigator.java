@@ -16,8 +16,8 @@ public class AddEditSetlistNavigator {
 
     void onSetlistSaved() {
 
-        //navigationProvider.startActivityForResult(SetlistsActivity.class, 0);
-        navigationProvider.finishActivity();
+        navigationProvider.finishActivityWithResult(AddEditSetlistActivity.RESULT_CODE_DATA_CHANGED);
+
     }
 
     void onCancel() {

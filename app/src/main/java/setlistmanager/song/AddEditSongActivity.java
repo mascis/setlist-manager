@@ -36,6 +36,7 @@ public class AddEditSongActivity extends AppCompatActivity {
 
     public static final int REQUEST_ADD_SONG = 1;
     public static final int REQUEST_EDIT_SONG = 2;
+    public static final int RESULT_CODE_DATA_CHANGED = 200;
 
     public static final String EXTRA_SONG_ID = "id";
 
@@ -265,8 +266,6 @@ public class AddEditSongActivity extends AppCompatActivity {
     }
 
     private void saveSong(Song song, String title, String artist, String uri) {
-
-        Log.i(TAG, "title = " + title + ", artist = " + artist + ", uri = " + uri);
 
         disposable.add(
                 addEditSongViewModel.saveSong(song, title, artist, uri)

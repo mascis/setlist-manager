@@ -35,6 +35,7 @@ public class AddEditSetlistActivity extends AppCompatActivity {
 
     public static final int REQUEST_ADD_SETLLIST = 1;
     public static final int REQUEST_EDIT_SETLIST = 2;
+    public static final int RESULT_CODE_DATA_CHANGED = 201;
 
     private static final String TAG = AddEditSetlistActivity.class.getSimpleName();
 

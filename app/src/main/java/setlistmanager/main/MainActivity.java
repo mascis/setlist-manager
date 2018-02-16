@@ -57,6 +57,7 @@ public class MainActivity extends AppCompatActivity implements SetlistsFragment.
     private static final int TAB_POSITION_SETLISTS = 0;
     private static final int TAB_POSITION_SONGS = 1;
     public static final String TAB_POSITION_KEY = "tabPos";
+    public static final int RESULT_CODE_DATA_CHANGED = 200;
 
     private SectionsPagerAdapter mSectionsPagerAdapter;
 
@@ -110,6 +111,18 @@ public class MainActivity extends AppCompatActivity implements SetlistsFragment.
         Fragment currentFragment = mSectionsPagerAdapter.getItem(currentItem);
 
         return currentFragment.onContextItemSelected(item);
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        //super.onActivityResult(requestCode, resultCode, data);
+
+        if ( resultCode == AddEditSongActivity.RESULT_CODE_DATA_CHANGED ) {
+            new GetSongsAsyncTask().execute();
+        } else if ( resultCode == AddEditSetlistActivity.RESULT_CODE_DATA_CHANGED ) {
+            new GetSetlistsAsyncTask().execute();
+        }
 
     }
 
