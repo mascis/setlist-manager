@@ -7,6 +7,7 @@ import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Date;
@@ -18,7 +19,7 @@ import java.util.UUID;
  */
 
 @Entity(tableName = "setlists")
-public class Setlist {
+public class Setlist implements Serializable {
 
     @PrimaryKey
     @NonNull

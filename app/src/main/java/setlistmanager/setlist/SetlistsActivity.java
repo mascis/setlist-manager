@@ -40,7 +40,7 @@ import setlistmanager.helper.OnStartDragListener;
 import setlistmanager.helper.SimpleItemTouchHelperCallback;
 import setlistmanager.util.ConfirmDialogFragment;
 
-public class SetlistsActivity extends AppCompatActivity implements ConfirmDialogFragment.ConfirmDialogListener, SetlistRecyclerViewAdapter.ItemClickListener {
+public class SetlistsActivity extends AppCompatActivity implements ConfirmDialogFragment.ConfirmDialogListener, SetlistRecyclerViewAdapter.SetlistItemClickListener {
 
     private static final String TAG = SetlistsActivity.class.getSimpleName();
 
@@ -127,7 +127,7 @@ public class SetlistsActivity extends AppCompatActivity implements ConfirmDialog
         dataset = new ArrayList<>();
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         recyclerView.setHasFixedSize(true);
-        adapter = new SetlistRecyclerViewAdapter(this, dataset);
+        adapter = new SetlistRecyclerViewAdapter(this, dataset, this);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
 
@@ -224,6 +224,7 @@ public class SetlistsActivity extends AppCompatActivity implements ConfirmDialog
 
             extras.put(SetlistSongsActivity.SETLIST_ID, setlist.getId());
             extras.put(SetlistSongsActivity.SETLIST_NAME, setlist.getName());
+
 
             setlistsNavigator.toSetlistSongs(extras);
 

@@ -5,6 +5,7 @@ import android.os.Bundle;
 
 import java.util.Map;
 
+import setlistmanager.main.MainActivity;
 import setlistmanager.screenslide.ScreenSlideActivity;
 import setlistmanager.song.AddEditSongActivity;
 import setlistmanager.song.SongsActivity;
@@ -35,7 +36,9 @@ public class SetlistSongsNavigator {
     }
 
     void onBackPressed() {
-        navigationProvider.startActivityForResult(SetlistsActivity.class, Activity.RESULT_OK);
+
+        navigationProvider.startActivityForResult(MainActivity.class, Activity.RESULT_OK);
+        //navigationProvider.startActivityForResult(SetlistsActivity.class, Activity.RESULT_OK);
     }
 
 }

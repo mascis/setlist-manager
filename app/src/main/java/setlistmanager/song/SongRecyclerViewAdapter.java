@@ -56,9 +56,16 @@ public class SongRecyclerViewAdapter extends RecyclerView.Adapter<SongRecyclerVi
         public void onCreateContextMenu(ContextMenu contextMenu, View view, ContextMenu.ContextMenuInfo contextMenuInfo) {
 
             // groupId, itemId, order, titleRes
+
+            contextMenu.add(1, R.id.edit, Menu.NONE, R.string.context_menu_edit);
+            contextMenu.add(1, R.id.open, Menu.NONE, R.string.context_menu_open);
+            contextMenu.add(1, R.id.remove, Menu.NONE, R.string.context_menu_remove);
+
+            /*
             contextMenu.add(Menu.NONE, R.id.edit, Menu.NONE, R.string.context_menu_edit);
             contextMenu.add(Menu.NONE, R.id.open, Menu.NONE, R.string.context_menu_open);
             contextMenu.add(Menu.NONE, R.id.remove, Menu.NONE, R.string.context_menu_remove);
+            */
 
         }
 

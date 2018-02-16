@@ -413,6 +413,13 @@ public class SetlistSongsActivity extends AppCompatActivity implements ConfirmDi
 
 
                             }
+                        }, new Consumer<Throwable>() {
+                            @Override
+                            public void accept(Throwable throwable) throws Exception {
+
+                                Log.e(TAG, "error fetching song", throwable);
+
+                            }
                         });
 
                     }

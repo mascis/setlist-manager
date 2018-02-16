@@ -36,26 +36,27 @@ public class SetlistRecyclerViewAdapter extends RecyclerView.Adapter<SetlistRecy
 
     private static final String TAG = SetlistRecyclerViewAdapter.class.getSimpleName();
 
-    public interface ItemClickListener {
-        public void onItemClick(int position);
+    public interface SetlistItemClickListener {
+        void onItemClick(int position);
     }
 
-    private static ItemClickListener itemClickListener;
+    private SetlistItemClickListener itemClickListener;
     private List<Setlist> dataset;
     private Context context;
     private int position;
 
-    public SetlistRecyclerViewAdapter(Context context, List<Setlist> dataset) {
+    public SetlistRecyclerViewAdapter(Context context, List<Setlist> dataset, SetlistItemClickListener itemClickListener) {
 
         this.context = context;
         this.dataset = dataset;
+        this.itemClickListener = itemClickListener;
 
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
-        itemClickListener = (ItemClickListener) parent.getContext();
+        //itemClickListener = (ItemClickListener) parent.getContext();
 
         View textView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.setlists_list_item, parent, false);

@@ -1,0 +1,17 @@
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/songs_relative_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="setlistmanager.song.SongsFragment">
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerViewSetlists"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@id/toolbar"
+        android:layout_marginBottom="56dp" />
+
+</android.support.design.widget.CoordinatorLayout>

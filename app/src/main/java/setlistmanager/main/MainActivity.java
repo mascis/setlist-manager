@@ -4,6 +4,7 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -33,14 +34,17 @@ import com.setlistmanager.R;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import setlistmanager.Injection;
 import setlistmanager.ViewModelFactory;
+import setlistmanager.data.Setlist;
 import setlistmanager.data.Song;
 import setlistmanager.setlist.AddEditSetlistActivity;
+import setlistmanager.setlist.SetlistsFragment;
 import setlistmanager.song.AddEditSongActivity;
 import setlistmanager.song.SongRecyclerViewAdapter;
 import setlistmanager.song.SongsFragment;
@@ -52,23 +56,10 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int TAB_POSITION_SETLISTS = 0;
     private static final int TAB_POSITION_SONGS = 1;
-    private static final int TAB_NUM_COUNT = 2;
     public static final String TAB_POSITION_KEY = "tabPos";
 
-
-    /**
-     * The {@link android.support.v4.view.PagerAdapter} that will provide
-     * fragments for each of the sections. We use a
-     * {@link FragmentPagerAdapter} derivative, which will keep every
-     * loaded fragment in memory. If this becomes too memory intensive, it
-     * may be best to switch to a
-     * {@link android.support.v4.app.FragmentStatePagerAdapter}.
-     */
     private SectionsPagerAdapter mSectionsPagerAdapter;
 
-    /**
-     * The {@link ViewPager} that will host the section contents.
-     */
     private ViewPager mViewPager;
 
     private ViewModelFactory viewModelFactory;
@@ -76,14 +67,20 @@ public class MainActivity extends AppCompatActivity {
     private MainActivityViewModel mainActivityViewModel;
 
     private List<Song> allSongs;
-    private List<Song> dataset;
+    private List<Song> datasetSongs;
+
+    private List<Setlist> datasetSetlists;
 
     private CompositeDisposable disposable = new CompositeDisposable();
 
     private SharedPreferences sharedPreferences;
 
+    private SongsFragment songsFragment;
+    private SetlistsFragment setlistsFragment;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -91,7 +88,8 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         allSongs = new ArrayList<>();
-        dataset = new ArrayList<>();
+        datasetSongs = new ArrayList<>();
+        datasetSetlists = new ArrayList<>();
 
         viewModelFactory = Injection.provideViewModelFactory(this, this);
         mainActivityViewModel = ViewModelProviders.of(this, viewModelFactory).get(MainActivityViewModel.class);
@@ -99,19 +97,32 @@ public class MainActivity extends AppCompatActivity {
 
         sharedPreferences = this.getSharedPreferences(TAB_POSITION_KEY, Context.MODE_PRIVATE);
 
+        new GetSetlistsAsyncTask().execute();
+        new GetSongsAsyncTask().execute();
+
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+
+        int currentItem = mViewPager.getCurrentItem();
+
+        Fragment currentFragment = mSectionsPagerAdapter.getItem(currentItem);
+
+        return currentFragment.onContextItemSelected(item);
 
     }
 
     private void init() {
 
-        Log.i(TAG, "init...");
+        Log.i(TAG, "initialising...");
+
+        if ( setlistsFragment == null || songsFragment == null ) {
+            return;
+        }
 
         List<Fragment> fragments = new ArrayList<>();
-        SongsFragment songsFragment = SongsFragment.newInstance(dataset);
-
-        PlaceholderFragment placeholderFragment = PlaceholderFragment.newInstance(1);
-
-        fragments.add(placeholderFragment);
+        fragments.add(setlistsFragment);
         fragments.add(songsFragment);
 
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), fragments);
@@ -155,47 +166,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-        getSongs();
-    }
-
-    private void getSongs() {
-
-        disposable.add(
-                mainActivityViewModel.getSongs()
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new Consumer<List<Song>>() {
-
-                            @Override
-                            public void accept(List<Song> songs) throws Exception {
-
-                                Log.i(TAG, "get songs DONE");
-
-                                allSongs.clear();
-                                allSongs.addAll(songs);
-                                dataset.clear();
-                                dataset.addAll(songs);
-                                init();
-
-                            }
-                        }, new Consumer<Throwable>() {
-
-                            @Override
-                            public void accept(Throwable throwable) throws Exception {
-
-                                Log.e(TAG, "Unable to get songs", throwable);
-
-                            }
-
-                        })
-
-        );
-
-    }
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
@@ -217,41 +187,6 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        private static final String ARG_SECTION_NUMBER = "section_number";
-
-        public PlaceholderFragment() {
-        }
-
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static PlaceholderFragment newInstance(int sectionNumber) {
-            PlaceholderFragment fragment = new PlaceholderFragment();
-            Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);
-            return fragment;
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-            textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
-            return rootView;
-        }
-    }
-
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
         List<Fragment> fragments;
@@ -266,23 +201,115 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public Fragment getItem(int position) {
 
-            Log.i(TAG, "TAB POSITION = " + position);
-
             return this.fragments.get(position);
-            /*
-            if ( position == TAB_POSITION_SETLISTS ) {
-                return this.fragments.get(TAB_POSITION_SETLISTS);
-            } else {
-                return this.fragments.get(TAB_POSITION_SONGS);
-            }
-            */
 
         }
 
         @Override
         public int getCount() {
-            return TAB_NUM_COUNT;
+
+            if ( this.fragments == null ) {
+                return 0;
+            }
+
+            return this.fragments.size();
         }
 
     }
+
+    private class GetSetlistsAsyncTask extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+
+            super.onPostExecute(aVoid);
+            setlistsFragment = SetlistsFragment.newInstance(datasetSetlists);
+            init();
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+
+            disposable.add(
+                    mainActivityViewModel.getSetlists()
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(new Consumer<List<Setlist>>() {
+
+                                @Override
+                                public void accept(List<Setlist> setlists) throws Exception {
+
+                                    datasetSetlists.clear();
+                                    datasetSetlists.addAll(setlists);
+
+                                }
+                            }, new Consumer<Throwable>() {
+                                @Override
+                                public void accept(Throwable throwable) throws Exception {
+                                    Log.e(TAG, "Unable to get setlists", throwable);
+                                }
+                            }));
+
+            return null;
+
+        }
+
+    }
+
+    private class GetSongsAsyncTask extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+
+            super.onPostExecute(aVoid);
+            songsFragment = SongsFragment.newInstance(datasetSongs);
+            init();
+
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+
+            disposable.add(
+                    mainActivityViewModel.getSongs()
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(new Consumer<List<Song>>() {
+
+                                @Override
+                                public void accept(List<Song> songs) throws Exception {
+
+                                    allSongs.clear();
+                                    allSongs.addAll(songs);
+                                    datasetSongs.clear();
+                                    datasetSongs.addAll(songs);
+
+                                }
+                            }, new Consumer<Throwable>() {
+
+                                @Override
+                                public void accept(Throwable throwable) throws Exception {
+
+                                    Log.e(TAG, "Unable to get songs", throwable);
+
+                                }
+
+                            })
+
+            );
+
+            return null;
+        }
+    }
+
 }
