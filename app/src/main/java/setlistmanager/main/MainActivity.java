@@ -113,19 +113,23 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private List<Fragment> getFragments() {
+
+        List<Fragment> fragments = new ArrayList<>();
+        fragments.add(getSetlistsFragment());
+        fragments.add(getSongsFragment());
+
+        return fragments;
+
+    }
+
     private void init() {
 
-        Log.i(TAG, "initialising...");
-
-        if ( setlistsFragment == null || songsFragment == null ) {
+        if ( getSetlistsFragment() == null || getSongsFragment() == null ) {
             return;
         }
 
-        List<Fragment> fragments = new ArrayList<>();
-        fragments.add(setlistsFragment);
-        fragments.add(songsFragment);
-
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), fragments);
+        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), getFragments());
 
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
@@ -187,6 +191,22 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    public SongsFragment getSongsFragment() {
+        return songsFragment;
+    }
+
+    public void setSongsFragment(SongsFragment songsFragment) {
+        this.songsFragment = songsFragment;
+    }
+
+    public SetlistsFragment getSetlistsFragment() {
+        return setlistsFragment;
+    }
+
+    public void setSetlistsFragment(SetlistsFragment setlistsFragment) {
+        this.setlistsFragment = setlistsFragment;
+    }
+
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
         List<Fragment> fragments;
@@ -228,8 +248,10 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(Void aVoid) {
 
             super.onPostExecute(aVoid);
-            setlistsFragment = SetlistsFragment.newInstance(datasetSetlists);
+            SetlistsFragment setlistsFragment = SetlistsFragment.newInstance(datasetSetlists);
+            setSetlistsFragment(setlistsFragment);
             init();
+
         }
 
         @Override
@@ -272,7 +294,8 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(Void aVoid) {
 
             super.onPostExecute(aVoid);
-            songsFragment = SongsFragment.newInstance(datasetSongs);
+            SongsFragment songsFragment = SongsFragment.newInstance(datasetSongs);
+            setSongsFragment(songsFragment);
             init();
 
         }
