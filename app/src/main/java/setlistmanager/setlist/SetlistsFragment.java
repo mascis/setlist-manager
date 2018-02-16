@@ -44,6 +44,12 @@ public class SetlistsFragment extends Fragment implements SetlistRecyclerViewAda
 
     private static final String ARG_DATASET = "dataset";
 
+    public interface OnDataChangedListener {
+        public void onDataChanged();
+    }
+
+    private OnDataChangedListener onDataChangedListener;
+
     private List<Setlist> dataset;
 
     private RecyclerView recyclerView;
@@ -58,6 +64,8 @@ public class SetlistsFragment extends Fragment implements SetlistRecyclerViewAda
     private SetlistsViewModel setlistsViewModel;
 
     //private OnFragmentInteractionListener mListener;
+
+
 
     public SetlistsFragment() {
         // Required empty public constructor
@@ -113,6 +121,8 @@ public class SetlistsFragment extends Fragment implements SetlistRecyclerViewAda
         recyclerView.setAdapter(adapter);
 
         adapter.notifyDataSetChanged();
+
+        onDataChangedListener = (OnDataChangedListener) getActivity();
 
         return setlistsView;
 
@@ -255,6 +265,7 @@ public class SetlistsFragment extends Fragment implements SetlistRecyclerViewAda
 
                                 Log.i(TAG, "Setlist deleted successfully");
                                 adapter.notifyDataSetChanged();
+                                onDataChangedListener.onDataChanged();
 
                             }
                         }, new Consumer<Throwable>() {

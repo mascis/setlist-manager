@@ -50,7 +50,7 @@ import setlistmanager.song.SongRecyclerViewAdapter;
 import setlistmanager.song.SongsFragment;
 import setlistmanager.util.BaseNavigator;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements SetlistsFragment.OnDataChangedListener, SongsFragment.OnDataChangedListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -335,4 +335,15 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onDataChanged() {
+        Log.i(TAG, "onDataChanged...");
+        new GetSetlistsAsyncTask().execute();
+    }
+
+    @Override
+    public void onSongsDataChanged() {
+        Log.i(TAG, "onSongsDataChanged...");
+        new GetSongsAsyncTask().execute();
+    }
 }

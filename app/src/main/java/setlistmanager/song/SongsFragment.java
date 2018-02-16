@@ -1,11 +1,5 @@
 package setlistmanager.song;
 
-import android.app.DialogFragment;
-import android.arch.lifecycle.ViewModel;
-import android.arch.lifecycle.ViewModelProviders;
-import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.BaseTransientBottomBar;
@@ -18,12 +12,9 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.setlistmanager.R;
-
-import org.apache.xmlbeans.impl.xb.xsdschema.BlockSet;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -35,21 +26,23 @@ import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import setlistmanager.Injection;
-import setlistmanager.ViewModelFactory;
 import setlistmanager.data.Setlist;
 import setlistmanager.data.Song;
 import setlistmanager.data.source.local.LocalDataSource;
 import setlistmanager.screenslide.ScreenSlideActivity;
-import setlistmanager.setlist.SetlistRecyclerViewAdapter;
-import setlistmanager.setlist.SetlistSongsRecyclerViewAdapter;
 import setlistmanager.util.BaseNavigator;
-import setlistmanager.util.ConfirmDialogFragment;
 
 public class SongsFragment extends Fragment implements SongRecyclerViewAdapter.ItemClickListener {
 
     private static final String TAG = SongsFragment.class.getSimpleName();
 
     private static final String ARG_DATASET = "dataset";
+
+    public interface OnDataChangedListener {
+        public void onSongsDataChanged();
+    }
+
+    private OnDataChangedListener onDataChangedListener;
 
     private List<Song> dataset;
 
@@ -63,8 +56,6 @@ public class SongsFragment extends Fragment implements SongRecyclerViewAdapter.I
 
     private CompositeDisposable disposable = new CompositeDisposable();
     private SongsViewModel songsViewModel;
-
-    //private OnFragmentInteractionListener mListener;
 
     public SongsFragment() {
         // Required empty public constructor
@@ -124,7 +115,7 @@ public class SongsFragment extends Fragment implements SongRecyclerViewAdapter.I
 
         adapter.notifyDataSetChanged();
 
-
+        onDataChangedListener = (OnDataChangedListener) getActivity();
 
         return songsView;
 
@@ -298,6 +289,8 @@ public class SongsFragment extends Fragment implements SongRecyclerViewAdapter.I
 
                                 Log.i(TAG, "Song deleted successfully");
                                 toastDeleteSuccessful.show();
+                                onDataChangedListener.onSongsDataChanged();
+
 
                             }
                         }, new Consumer<Throwable>() {
