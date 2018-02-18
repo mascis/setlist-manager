@@ -9,6 +9,8 @@ import android.view.ContextMenu;
 import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -153,7 +155,6 @@ public class SetlistRecyclerViewAdapter extends RecyclerView.Adapter<SetlistRecy
         public TextView date;
         public TextView location;
         public TextView options;
-        public ImageView dragHandle;
 
         public ViewHolder(View view) {
             super(view);

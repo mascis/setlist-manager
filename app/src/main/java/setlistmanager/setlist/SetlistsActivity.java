@@ -13,6 +13,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -78,6 +79,8 @@ public class SetlistsActivity extends AppCompatActivity implements SetlistRecycl
         adapter = new SetlistRecyclerViewAdapter(this, dataset, this);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
+
+        //registerForContextMenu(recyclerView);
 
     }
 
@@ -207,6 +210,18 @@ public class SetlistsActivity extends AppCompatActivity implements SetlistRecycl
         }
 
     }
+
+    /*
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.setlist_context_menu, menu);
+
+        super.onCreateContextMenu(menu, v, menuInfo);
+
+    }
+    */
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
