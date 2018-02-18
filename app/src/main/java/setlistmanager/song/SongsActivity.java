@@ -7,6 +7,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
@@ -21,6 +22,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.SearchView;
 import android.widget.Toast;
 
@@ -73,6 +75,8 @@ public class SongsActivity extends AppCompatActivity implements ConfirmDialogFra
     private Toast toastDeleteSuccessful;
 
     private Toast toastDeleteFailed;
+
+    private BottomNavigationView bottomNavigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,6 +132,37 @@ public class SongsActivity extends AppCompatActivity implements ConfirmDialogFra
             }
         });
 
+        bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
+
+        bottomNavigationView.setSelectedItemId(R.id.action_songs);
+
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+
+                int id = item.getItemId();
+
+                switch ( id ) {
+
+                    case R.id.action_setlists:
+                        Log.i(TAG, "Setlists clicked in bottom navigation...");
+                        songsNavigator.toSetlists();
+                        return true;
+
+                    case R.id.action_songs:
+                        Log.i(TAG, "Songs clicked in bottom navigation...");
+                        return true;
+
+                    case R.id.action_settings:
+                        Log.i(TAG, "Settings clicked in bottom navigation...");
+                        return true;
+
+                }
+
+                return false;
+
+            }
+        });
         toastDeleteSuccessful = Toast.makeText(getApplicationContext(), getResources().getText(R.string.song_deleted_successfully), Toast.LENGTH_LONG);
         toastDeleteFailed = Toast.makeText(getApplicationContext(), getResources().getText(R.string.song_deleted_successfully), Toast.LENGTH_LONG);
 

@@ -37,8 +37,8 @@ public class SetlistSongsNavigator {
 
     void onBackPressed() {
 
-        navigationProvider.startActivityForResult(MainActivity.class, Activity.RESULT_OK);
-        //navigationProvider.startActivityForResult(SetlistsActivity.class, Activity.RESULT_OK);
+        //navigationProvider.startActivityForResult(MainActivity.class, Activity.RESULT_OK);
+        navigationProvider.startActivityForResult(SetlistsActivity.class, Activity.RESULT_OK);
     }
 
 }

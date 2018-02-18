@@ -2,8 +2,10 @@ package setlistmanager.setlist;
 
 import android.app.DialogFragment;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
@@ -15,7 +17,9 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -69,6 +73,8 @@ public class SetlistsActivity extends AppCompatActivity implements ConfirmDialog
     private ActionBarDrawerToggle drawerToggle;
 
     private ItemTouchHelper itemTouchHelper;
+
+    private BottomNavigationView bottomNavigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,6 +130,35 @@ public class SetlistsActivity extends AppCompatActivity implements ConfirmDialog
             }
         });
 
+        bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
+
+        bottomNavigationView.setSelectedItemId(R.id.action_setlists);
+
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+
+                int id = item.getItemId();
+
+                switch ( id ) {
+
+                    case R.id.action_setlists:
+                        return true;
+
+                    case R.id.action_songs:
+                        setlistsNavigator.toSongs();
+                        return true;
+
+                    case R.id.action_settings:
+                        return true;
+
+                }
+
+                return false;
+
+            }
+        });
+
         dataset = new ArrayList<>();
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         recyclerView.setHasFixedSize(true);
@@ -156,16 +191,13 @@ public class SetlistsActivity extends AppCompatActivity implements ConfirmDialog
         switch (item.getItemId()) {
 
             case R.id.nav_setlists:
-                Log.i(TAG, "Setlists clicked in nav menu");
                 return true;
 
             case R.id.nav_songs:
-                Log.i(TAG, "Songs clicked in nav menu");
                 setlistsNavigator.toSongs();
                 return true;
 
             case R.id.nav_settings:
-                Log.i(TAG, "Settings clicked in nav menu");
                 return true;
 
             default:
@@ -174,20 +206,28 @@ public class SetlistsActivity extends AppCompatActivity implements ConfirmDialog
         }
     }
 
-    /*
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_nav_add, menu);
+        inflater.inflate(R.menu.menu_main, menu);
         return true;
     }
-    */
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
         if ( drawerToggle.onOptionsItemSelected(item)){
             return true;
+        }
+
+        int id = item.getItemId();
+
+        switch ( id ) {
+
+            case R.id.action_settings:
+                Log.i(TAG, "Settings clicked...");
+                return true;
+
         }
 
         return super.onOptionsItemSelected(item);

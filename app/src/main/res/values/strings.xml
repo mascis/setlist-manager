@@ -57,7 +57,6 @@
 
     <string name="search_title">Search</string>
 
-    <string name="title_activity_main">MainActivity</string>
     <string name="tab_text_1">Setlists</string>
     <string name="tab_text_2">Songs</string>
     <string name="action_settings">Settings</string>

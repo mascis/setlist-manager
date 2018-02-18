@@ -1,0 +1,26 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <item
+        android:id="@+id/action_setlists"
+        android:orderInCategory="100"
+        android:icon="@drawable/ic_list_white_24dp"
+        android:title="Setlists"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_songs"
+        android:orderInCategory="200"
+        android:icon="@drawable/ic_music_note_white_24dp"
+        android:title="Songs"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_settings"
+        android:orderInCategory="300"
+        android:icon="@drawable/ic_settings_white_24dp"
+        android:title="@string/action_settings"
+        app:showAsAction="always" />
+
+</menu>
