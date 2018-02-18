@@ -5,10 +5,8 @@ import android.os.Bundle;
 
 import java.util.Map;
 
-import setlistmanager.main.MainActivity;
 import setlistmanager.screenslide.ScreenSlideActivity;
 import setlistmanager.song.AddEditSongActivity;
-import setlistmanager.song.SongsActivity;
 import setlistmanager.util.BaseNavigator;
 
 /**

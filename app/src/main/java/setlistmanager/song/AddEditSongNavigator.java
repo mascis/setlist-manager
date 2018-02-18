@@ -1,9 +1,5 @@
 package setlistmanager.song;
 
-import android.app.Activity;
-
-import setlistmanager.main.MainActivity;
-import setlistmanager.setlist.SetlistsActivity;
 import setlistmanager.util.BaseNavigator;
 
 /**
