@@ -1,18 +1,16 @@
 package setlistmanager.song;
 
-import android.app.DialogFragment;
 import android.app.SearchManager;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.BaseTransientBottomBar;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.NavigationView;
-import android.support.v4.widget.DrawerLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -22,7 +20,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.SearchView;
 import android.widget.Toast;
 
@@ -42,9 +39,8 @@ import setlistmanager.ViewModelFactory;
 import setlistmanager.data.Setlist;
 import setlistmanager.data.Song;
 import setlistmanager.screenslide.ScreenSlideActivity;
-import setlistmanager.util.ConfirmDialogFragment;
 
-public class SongsActivity extends AppCompatActivity implements ConfirmDialogFragment.ConfirmDialogListener, SongRecyclerViewAdapter.ItemClickListener {
+public class SongsActivity extends AppCompatActivity implements SongRecyclerViewAdapter.ItemClickListener {
 
     private static final String TAG = SongsActivity.class.getSimpleName();
 
@@ -66,12 +62,6 @@ public class SongsActivity extends AppCompatActivity implements ConfirmDialogFra
 
     private List<Song> allSongs;
 
-    private DrawerLayout drawerLayout;
-
-    private NavigationView navigationView;
-
-    private ActionBarDrawerToggle drawerToggle;
-
     private Toast toastDeleteSuccessful;
 
     private Toast toastDeleteFailed;
@@ -83,46 +73,34 @@ public class SongsActivity extends AppCompatActivity implements ConfirmDialogFra
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_songs);
 
+        prepareActionBar();
+        prepareFloatingActionButton();
+        prepareBottomNavigation();
+        prepareToastMessages();
+
+        viewModelFactory = Injection.provideViewModelFactory(this, this);
+        songsViewModel = ViewModelProviders.of(this, viewModelFactory).get(SongsViewModel.class);
+        songsNavigator = songsViewModel.getSongsNavigator();
+
+        allSongs = new ArrayList<>();
+        dataset = new ArrayList<>();
+        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        recyclerView.setHasFixedSize(true);
+        adapter = new SongRecyclerViewAdapter(this, dataset, this);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(adapter);
+    }
+
+    private void prepareActionBar() {
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         actionBar.setTitle(getResources().getString(R.string.songs_title));
 
-        actionBar.setHomeButtonEnabled(true);
-        actionBar.setDisplayHomeAsUpEnabled(true);
+    }
 
-        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-
-        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.drawer_open, R.string.drawer_close) {
-
-            public void onDrawerClosed(View view) {
-                super.onDrawerClosed(view);
-                invalidateOptionsMenu();
-            }
-
-            public void onDrawerOpened(View drawerView) {
-                super.onDrawerOpened(drawerView);
-                invalidateOptionsMenu();
-            }
-        };
-
-        drawerLayout.addDrawerListener(drawerToggle);
-
-        navigationView = (NavigationView) findViewById(R.id.navigation);
-
-        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-
-                selectDrawerItem(item);
-                return true;
-
-            }
-        });
-
-        viewModelFactory = Injection.provideViewModelFactory(this, this);
-        songsViewModel = ViewModelProviders.of(this, viewModelFactory).get(SongsViewModel.class);
-        songsNavigator = songsViewModel.getSongsNavigator();
+    private void prepareFloatingActionButton() {
 
         floatingActionButton = (FloatingActionButton) findViewById(R.id.fab_add);
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
@@ -132,8 +110,11 @@ public class SongsActivity extends AppCompatActivity implements ConfirmDialogFra
             }
         });
 
-        bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
+    }
 
+    private void prepareBottomNavigation() {
+
+        bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
         bottomNavigationView.setSelectedItemId(R.id.action_songs);
 
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -145,16 +126,13 @@ public class SongsActivity extends AppCompatActivity implements ConfirmDialogFra
                 switch ( id ) {
 
                     case R.id.action_setlists:
-                        Log.i(TAG, "Setlists clicked in bottom navigation...");
                         songsNavigator.toSetlists();
                         return true;
 
                     case R.id.action_songs:
-                        Log.i(TAG, "Songs clicked in bottom navigation...");
                         return true;
 
                     case R.id.action_settings:
-                        Log.i(TAG, "Settings clicked in bottom navigation...");
                         return true;
 
                 }
@@ -163,28 +141,25 @@ public class SongsActivity extends AppCompatActivity implements ConfirmDialogFra
 
             }
         });
-        toastDeleteSuccessful = Toast.makeText(getApplicationContext(), getResources().getText(R.string.song_deleted_successfully), Toast.LENGTH_LONG);
-        toastDeleteFailed = Toast.makeText(getApplicationContext(), getResources().getText(R.string.song_deleted_successfully), Toast.LENGTH_LONG);
 
-        allSongs = new ArrayList<>();
-        dataset = new ArrayList<>();
-        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
-        recyclerView.setHasFixedSize(true);
-        adapter = new SongRecyclerViewAdapter(this, dataset, this);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(adapter);
     }
 
-    @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-        drawerToggle.syncState();
+    private void prepareToastMessages() {
+        toastDeleteSuccessful = Toast.makeText(getApplicationContext(), getResources().getText(R.string.song_deleted_successfully), Toast.LENGTH_LONG);
+        toastDeleteFailed = Toast.makeText(getApplicationContext(), getResources().getText(R.string.song_deleted_successfully), Toast.LENGTH_LONG);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
         getSongs();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        disposable.clear();
     }
 
     @Override
@@ -199,26 +174,6 @@ public class SongsActivity extends AppCompatActivity implements ConfirmDialogFra
 
         return super.onPrepareOptionsMenu(menu);
 
-    }
-
-    private boolean selectDrawerItem(MenuItem item) {
-
-        switch (item.getItemId()) {
-
-            case R.id.nav_setlists:
-                songsNavigator.toSetlists();
-                return true;
-
-            case R.id.nav_songs:
-                return true;
-
-            case R.id.nav_settings:
-                return true;
-
-            default:
-                return true;
-
-        }
     }
 
     @Override
@@ -282,8 +237,14 @@ public class SongsActivity extends AppCompatActivity implements ConfirmDialogFra
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
-        if ( drawerToggle.onOptionsItemSelected(item)){
-            return true;
+        int id = item.getItemId();
+
+        switch ( id ) {
+
+            case R.id.action_settings:
+                Log.i(TAG, "Settings clicked...");
+                return true;
+
         }
 
         return super.onOptionsItemSelected(item);
@@ -331,7 +292,7 @@ public class SongsActivity extends AppCompatActivity implements ConfirmDialogFra
                 return true;
 
             case R.id.remove:
-                showConfirmDialog(song);
+                handleRemove(song);
                 return true;
 
             default:
@@ -340,39 +301,50 @@ public class SongsActivity extends AppCompatActivity implements ConfirmDialogFra
 
     }
 
-    public void showConfirmDialog(Song song) {
+    private String createRemoveMessage(Song song) {
 
-        String title = getResources().getString(R.string.confirm_dialog_delete_song_title);
-        String question = getResources().getString(R.string.confirm_dialog_delete_song_message);
-        String songTitle = song.getTitle();
-        String note = getResources().getString(R.string.confirm_dialog_delete_song_message_note);
-        String message = question + " " + songTitle + "? " + note;
+        String msg = "";
 
-        DialogFragment confirmDialog = ConfirmDialogFragment.instance(title, message);
-        confirmDialog.show(getFragmentManager(), "ConfirmDialog");
+        if ( song.getArtist() != null && !song.getArtist().isEmpty() ) {
 
-    }
+            msg = song.getArtist() + " - " + song.getTitle() + " " + getResources().getString(R.string.common_deleted);
 
-    @Override
-    public void onDialogPositiveClick(DialogFragment dialog) {
+        } else {
 
-        Song song;
+            msg = song.getTitle() + " " + getResources().getString(R.string.common_deleted);
 
-        try {
-            song = dataset.get(getAdapterPosition());
-            deleteSongFromSetlists(song.getId());
-            deleteSong(song.getId());
-        } catch (Exception e) {
-            Log.e(TAG, "Deleting song failed");
-            toastDeleteFailed.show();
         }
 
+        return msg;
+
     }
 
-    @Override
-    public void onDialogNegativeClick(DialogFragment dialog) {
+    private void handleRemove(final Song song ) {
 
-        dialog.dismiss();
+        String msg = createRemoveMessage(song);
+
+        final Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), msg, Snackbar.LENGTH_LONG);
+
+        snackbar.setAction(R.string.undo, new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                snackbar.dismiss();
+            }
+        });
+
+        snackbar.addCallback(new BaseTransientBottomBar.BaseCallback<Snackbar>() {
+            @Override
+            public void onDismissed(Snackbar transientBottomBar, int event) {
+
+                if ( event == DISMISS_EVENT_TIMEOUT ) {
+                    deleteSongFromSetlists(song.getId());
+                    deleteSong(song.getId());
+                }
+
+            }
+        });
+
+        snackbar.show();
 
     }
 
@@ -500,13 +472,6 @@ public class SongsActivity extends AppCompatActivity implements ConfirmDialogFra
 
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-
-        disposable.clear();
-    }
-
     private class UpdateAsyncTask extends AsyncTask<List<Object>, Void, Void> {
 
         @Override
@@ -532,4 +497,5 @@ public class SongsActivity extends AppCompatActivity implements ConfirmDialogFra
             return null;
         }
     }
+
 }

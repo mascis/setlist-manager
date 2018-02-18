@@ -1,23 +1,18 @@
 package setlistmanager.setlist;
 
-import android.app.DialogFragment;
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.BaseTransientBottomBar;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.NavigationView;
-import android.support.v4.widget.DrawerLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -26,7 +21,6 @@ import android.view.View;
 import com.setlistmanager.R;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,12 +33,8 @@ import io.reactivex.schedulers.Schedulers;
 import setlistmanager.Injection;
 import setlistmanager.ViewModelFactory;
 import setlistmanager.data.Setlist;
-import setlistmanager.helper.ItemTouchHelperAdapter;
-import setlistmanager.helper.OnStartDragListener;
-import setlistmanager.helper.SimpleItemTouchHelperCallback;
-import setlistmanager.util.ConfirmDialogFragment;
 
-public class SetlistsActivity extends AppCompatActivity implements ConfirmDialogFragment.ConfirmDialogListener, SetlistRecyclerViewAdapter.SetlistItemClickListener {
+public class SetlistsActivity extends AppCompatActivity implements SetlistRecyclerViewAdapter.SetlistItemClickListener {
 
     private static final String TAG = SetlistsActivity.class.getSimpleName();
 
@@ -62,17 +52,9 @@ public class SetlistsActivity extends AppCompatActivity implements ConfirmDialog
 
     private RecyclerView.Adapter adapter;
 
-    private RecyclerView.LayoutManager layoutManager;
-
     private List<Setlist> dataset;
 
-    private DrawerLayout drawerLayout;
-
-    private NavigationView navigationView;
-
-    private ActionBarDrawerToggle drawerToggle;
-
-    private ItemTouchHelper itemTouchHelper;
+    //private ItemTouchHelper itemTouchHelper;
 
     private BottomNavigationView bottomNavigationView;
 
@@ -82,45 +64,33 @@ public class SetlistsActivity extends AppCompatActivity implements ConfirmDialog
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setlists);
 
+        prepareActionBar();
+        prepareFloatingActionButton();
+        prepareBottomNavigation();
+
+        viewModelFactory = Injection.provideViewModelFactory(this, this);
+        setlistsViewModel = ViewModelProviders.of(this, viewModelFactory).get(SetlistsViewModel.class);
+        setlistsNavigator = setlistsViewModel.getSetlistsNavigator();
+
+        dataset = new ArrayList<>();
+        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        recyclerView.setHasFixedSize(true);
+        adapter = new SetlistRecyclerViewAdapter(this, dataset, this);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(adapter);
+
+    }
+
+    private void prepareActionBar() {
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         actionBar.setTitle(getResources().getString(R.string.setlists_title));
 
-        actionBar.setHomeButtonEnabled(true);
-        actionBar.setDisplayHomeAsUpEnabled(true);
+    }
 
-        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-
-        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.drawer_open, R.string.drawer_close) {
-
-            public void onDrawerClosed(View view) {
-                super.onDrawerClosed(view);
-                invalidateOptionsMenu();
-            }
-
-            public void onDrawerOpened(View drawerView) {
-                super.onDrawerOpened(drawerView);
-                invalidateOptionsMenu();
-            }
-        };
-
-        drawerLayout.addDrawerListener(drawerToggle);
-
-        navigationView = (NavigationView) findViewById(R.id.navigation);
-        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-
-                selectDrawerItem(item);
-                return true;
-
-            }
-        });
-
-        viewModelFactory = Injection.provideViewModelFactory(this, this);
-        setlistsViewModel = ViewModelProviders.of(this, viewModelFactory).get(SetlistsViewModel.class);
-        setlistsNavigator = setlistsViewModel.getSetlistsNavigator();
+    private void prepareFloatingActionButton() {
 
         floatingActionButton = (FloatingActionButton) findViewById(R.id.fab_add);
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
@@ -130,8 +100,11 @@ public class SetlistsActivity extends AppCompatActivity implements ConfirmDialog
             }
         });
 
-        bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
+    }
 
+    private void prepareBottomNavigation() {
+
+        bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
         bottomNavigationView.setSelectedItemId(R.id.action_setlists);
 
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -159,19 +132,6 @@ public class SetlistsActivity extends AppCompatActivity implements ConfirmDialog
             }
         });
 
-        dataset = new ArrayList<>();
-        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
-        recyclerView.setHasFixedSize(true);
-        adapter = new SetlistRecyclerViewAdapter(this, dataset, this);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(adapter);
-
-    }
-
-    @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-        drawerToggle.syncState();
     }
 
     @Override
@@ -181,29 +141,9 @@ public class SetlistsActivity extends AppCompatActivity implements ConfirmDialog
     }
 
     @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-
-        return super.onPrepareOptionsMenu(menu);
-    }
-
-    private boolean selectDrawerItem(MenuItem item) {
-
-        switch (item.getItemId()) {
-
-            case R.id.nav_setlists:
-                return true;
-
-            case R.id.nav_songs:
-                setlistsNavigator.toSongs();
-                return true;
-
-            case R.id.nav_settings:
-                return true;
-
-            default:
-                return true;
-
-        }
+    protected void onStop() {
+        super.onStop();
+        disposable.clear();
     }
 
     @Override
@@ -215,10 +155,6 @@ public class SetlistsActivity extends AppCompatActivity implements ConfirmDialog
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
-        if ( drawerToggle.onOptionsItemSelected(item)){
-            return true;
-        }
 
         int id = item.getItemId();
 
@@ -294,7 +230,7 @@ public class SetlistsActivity extends AppCompatActivity implements ConfirmDialog
                 return true;
 
             case R.id.remove:
-                showConfirmDialog(setlist);
+                handleRemove(setlist);
                 return true;
 
             default:
@@ -303,36 +239,33 @@ public class SetlistsActivity extends AppCompatActivity implements ConfirmDialog
 
     }
 
-    public void showConfirmDialog(Setlist setlist) {
+    private void handleRemove(final Setlist setlist ) {
 
-        String title = getResources().getString(R.string.confirm_dialog_delete_setlist_title);
-        String question = getResources().getString(R.string.confirm_dialog_delete_setlist_message);
-        String setlistName = setlist.getName();
-        String message = question + " " + setlistName + "?";
+        String msg = setlist.getName() + " " + getResources().getString(R.string.common_deleted);
 
-        DialogFragment confirmDialog = ConfirmDialogFragment.instance(title, message);
-        confirmDialog.show(getFragmentManager(), "ConfirmDialog");
+        final Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), msg, Snackbar.LENGTH_LONG);
 
-    }
+        snackbar.setAction(R.string.undo, new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                snackbar.dismiss();
+            }
+        });
 
-    @Override
-    public void onDialogPositiveClick(DialogFragment dialog) {
+        snackbar.addCallback(new BaseTransientBottomBar.BaseCallback<Snackbar>() {
 
-        Setlist setlist;
+            @Override
+            public void onDismissed(Snackbar transientBottomBar, int event) {
 
-        try {
-            setlist = dataset.get(getAdapterPosition());
-            deleteSetlist(setlist.getId());
-        } catch (Exception e) {
-            Log.e(TAG, "Deleting setlist failed");
-        }
+                if ( event == DISMISS_EVENT_TIMEOUT ) {
+                    deleteSetlist(setlist.getId());
+                }
 
-    }
+            }
 
-    @Override
-    public void onDialogNegativeClick(DialogFragment dialog) {
+        });
 
-        dialog.dismiss();
+        snackbar.show();
 
     }
 
@@ -408,11 +341,6 @@ public class SetlistsActivity extends AppCompatActivity implements ConfirmDialog
 
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
 
-        disposable.clear();
-    }
 
 }
