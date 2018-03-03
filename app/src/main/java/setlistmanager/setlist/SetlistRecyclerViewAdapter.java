@@ -28,6 +28,7 @@ import setlistmanager.helper.ItemTouchHelperAdapter;
 import setlistmanager.data.Setlist;
 import setlistmanager.helper.ItemTouchHelperViewHolder;
 import setlistmanager.helper.OnStartDragListener;
+import setlistmanager.util.Theme;
 
 
 /**
@@ -75,6 +76,27 @@ public class SetlistRecyclerViewAdapter extends RecyclerView.Adapter<SetlistRecy
             public void onClick(View view) {
                 setPosition(holder.getLayoutPosition());
                 view.showContextMenu();
+            }
+        });
+
+        holder.itemView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+
+                int action = motionEvent.getAction();
+
+                if ( action == MotionEvent.ACTION_DOWN ) {
+
+                    Theme.setListItemActive(holder);
+
+                } else if ( action == MotionEvent.ACTION_UP ) {
+
+                    Theme.setListItemUnactive(holder);
+
+                }
+
+
+                return false;
             }
         });
 

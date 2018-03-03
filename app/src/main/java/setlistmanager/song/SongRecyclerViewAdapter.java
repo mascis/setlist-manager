@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -19,6 +20,7 @@ import org.apache.xmlbeans.impl.xb.xsdschema.BlockSet;
 import java.util.List;
 
 import setlistmanager.data.Song;
+import setlistmanager.util.Theme;
 
 
 /**
@@ -96,6 +98,27 @@ public class SongRecyclerViewAdapter extends RecyclerView.Adapter<SongRecyclerVi
             public void onClick(View view) {
                 setPosition(holder.getLayoutPosition());
                 view.showContextMenu();
+            }
+        });
+
+        holder.itemView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+
+                int action = motionEvent.getAction();
+
+                if ( action == MotionEvent.ACTION_DOWN ) {
+
+                    Theme.setListItemActive(holder);
+
+                } else if ( action == MotionEvent.ACTION_UP ) {
+
+                    Theme.setListItemUnactive(holder);
+
+                }
+
+
+                return false;
             }
         });
 

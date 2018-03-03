@@ -8,6 +8,6 @@
 
     <include layout="@layout/toolbar"/>
     <include layout="@layout/recycler_view"/>
-    <include layout="@layout/floating_action_button"/>
+    <include layout="@layout/floating_action_button_2" />
 
 </RelativeLayout>

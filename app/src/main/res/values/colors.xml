@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color type="color" name="colorPrimary">#A1D6E2</color>
-    <color type="color" name="colorSecondary">#1995AD</color>
-    <color type="color" name="colorTertiary">#F1F1F2</color>
-    <color type="color" name="colorActive">#BCBABE</color>
+    <color type="color" name="colorPrimary">#2F74AB</color>
+    <color type="color" name="colorSecondary">#44A8F7</color>
+    <color type="color" name="colorActive">#5044A8F7</color>
 
-    <color type="color" name="colorPrimaryDark">#1995AD</color>
-    <color type="color" name="colorAccent">#F1F1F2</color>
-    <color type="color" name="colorAccentDark">#BCBABE</color>
+    <color type="color" name="colorGreen">#37C568</color>
+    <color type="color" name="colorRed">#F8625D</color>
+
+    <color type="color" name="colorAccent">#BCBABE</color>
+    <color type="color" name="colorPrimaryDark">#BCBABE</color>
 </resources>

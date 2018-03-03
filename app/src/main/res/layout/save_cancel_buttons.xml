@@ -14,7 +14,9 @@
         android:layout_marginLeft="16dp"
         android:layout_marginStart="16dp"
         android:layout_width="wrap_content"
-        android:text="@string/button_save" />
+        android:text="@string/button_save"
+        android:backgroundTint="@color/colorSecondary"
+        android:textColor="@android:color/white"/>
 
     <Button
         android:id="@+id/button_cancel"
@@ -25,7 +27,9 @@
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
         android:layout_width="wrap_content"
-        android:text="@string/button_cancel" />
+        android:text="@string/button_cancel"
+        android:backgroundTint="@color/colorSecondary"
+        android:textColor="@android:color/white"/>
 
 </RelativeLayout>
 

@@ -19,6 +19,7 @@ import java.util.List;
 import setlistmanager.data.Song;
 import setlistmanager.helper.ItemTouchHelperViewHolder;
 import setlistmanager.helper.OnStartDragListener;
+import setlistmanager.util.Theme;
 
 
 /**
@@ -82,6 +83,27 @@ public class SetlistSongsRecyclerViewAdapter extends RecyclerView.Adapter<Setlis
             }
         });
 
+        holder.itemView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+
+                int action = motionEvent.getAction();
+
+                if ( action == MotionEvent.ACTION_DOWN ) {
+
+                    Theme.setListItemActive(holder);
+
+                } else if ( action == MotionEvent.ACTION_UP ) {
+
+                    Theme.setListItemUnactive(holder);
+
+                }
+
+
+                return false;
+            }
+        });
+
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -92,7 +114,6 @@ public class SetlistSongsRecyclerViewAdapter extends RecyclerView.Adapter<Setlis
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-
                 setPosition(holder.getLayoutPosition());
                 return false;
             }
@@ -123,6 +144,7 @@ public class SetlistSongsRecyclerViewAdapter extends RecyclerView.Adapter<Setlis
 
     @Override
     public void onViewRecycled(ViewHolder holder) {
+        holder.itemView.setOnTouchListener(null);
         holder.itemView.setOnLongClickListener(null);
         holder.itemView.setOnClickListener(null);
         holder.dragHandle.setOnTouchListener(null);
@@ -156,15 +178,13 @@ public class SetlistSongsRecyclerViewAdapter extends RecyclerView.Adapter<Setlis
         @Override
         public void onItemSelected() {
             itemView.setLongClickable(false);
-            itemView.setBackgroundColor(Color.LTGRAY);
+            itemView.setBackgroundResource(R.color.colorActive);
         }
 
         @Override
         public void onItemClear() {
             itemView.setLongClickable(true);
-            itemView.setBackgroundColor(0);
             itemView.setBackgroundResource(R.drawable.list_item_divider);
-
         }
 
         @Override

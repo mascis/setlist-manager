@@ -30,7 +30,7 @@
                 android:id="@+id/label_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/setlist_name" />
+                android:text="@string/setlist_name"/>
 
             <EditText
                 android:id="@+id/setlist_name"
@@ -43,7 +43,7 @@
                 android:id="@+id/label_location"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/setlist_location" />
+                android:text="@string/setlist_location"/>
 
             <EditText
                 android:id="@+id/setlist_location"
@@ -63,7 +63,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:calendarViewShown="false"
-                android:datePickerMode="spinner" />
+                android:datePickerMode="spinner"/>
 
         </LinearLayout>
 

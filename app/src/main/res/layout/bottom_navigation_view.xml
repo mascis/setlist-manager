@@ -8,5 +8,5 @@
     android:layout_height="56dp"
     android:layout_gravity="end"
     android:layout_alignParentBottom="true"
-    android:background="@color/colorSecondary"
+    android:background="@color/colorPrimary"
     app:menu="@menu/bottom_navigation" />
