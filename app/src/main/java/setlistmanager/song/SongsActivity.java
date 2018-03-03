@@ -68,6 +68,12 @@ public class SongsActivity extends AppCompatActivity implements SongRecyclerView
 
     private BottomNavigationView bottomNavigationView;
 
+    private Snackbar snackbar;
+
+    private boolean isRemoving;
+
+    private String songToRemove;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -89,6 +95,9 @@ public class SongsActivity extends AppCompatActivity implements SongRecyclerView
         adapter = new SongRecyclerViewAdapter(this, dataset, this);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
+
+        setRemoving(false);
+        setSongToRemove(null);
     }
 
     private void prepareActionBar() {
@@ -97,6 +106,8 @@ public class SongsActivity extends AppCompatActivity implements SongRecyclerView
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         actionBar.setTitle(getResources().getString(R.string.songs_title));
+
+
 
     }
 
@@ -147,6 +158,8 @@ public class SongsActivity extends AppCompatActivity implements SongRecyclerView
     private void prepareToastMessages() {
         toastDeleteSuccessful = Toast.makeText(getApplicationContext(), getResources().getText(R.string.song_deleted_successfully), Toast.LENGTH_LONG);
         toastDeleteFailed = Toast.makeText(getApplicationContext(), getResources().getText(R.string.song_deleted_successfully), Toast.LENGTH_LONG);
+
+        snackbar = Snackbar.make(findViewById(android.R.id.content), "", Snackbar.LENGTH_LONG);
     }
 
     @Override
@@ -157,9 +170,22 @@ public class SongsActivity extends AppCompatActivity implements SongRecyclerView
 
     @Override
     protected void onStop() {
-        super.onStop();
 
-        disposable.clear();
+        if ( isRemoving() && getSongToRemove() != null) {
+
+            snackbar.dismiss();
+            deleteSongFromSetlists(getSongToRemove());
+            deleteSong(getSongToRemove());
+
+            super.onStop();
+            disposable.clear();
+
+        } else {
+
+            super.onStop();
+            disposable.clear();
+
+        }
     }
 
     @Override
@@ -207,6 +233,22 @@ public class SongsActivity extends AppCompatActivity implements SongRecyclerView
 
         return true;
 
+    }
+
+    public boolean isRemoving() {
+        return isRemoving;
+    }
+
+    public void setRemoving(boolean removing) {
+        isRemoving = removing;
+    }
+
+    public String getSongToRemove() {
+        return songToRemove;
+    }
+
+    public void setSongToRemove(String songToRemove) {
+        this.songToRemove = songToRemove;
     }
 
     private void filterSongs(String str) {
@@ -318,11 +360,34 @@ public class SongsActivity extends AppCompatActivity implements SongRecyclerView
 
     }
 
+    private void updateDataset( Song song ) {
+
+        List<Song> songs = new ArrayList<>();
+
+        for ( Song s : dataset ) {
+
+            if ( s.getId() != song.getId() ) {
+                songs.add(s);
+            }
+
+        }
+
+        dataset.clear();
+        dataset.addAll(songs);
+        adapter.notifyDataSetChanged();
+
+    }
+
     private void handleRemove(final Song song ) {
 
         String msg = createRemoveMessage(song);
 
-        final Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), msg, Snackbar.LENGTH_LONG);
+        final List<Song> allSongs = new ArrayList<>();
+        allSongs.addAll(dataset);
+
+        updateDataset(song);
+
+        snackbar.setText(msg);
 
         snackbar.setAction(R.string.undo, new View.OnClickListener() {
             @Override
@@ -338,6 +403,12 @@ public class SongsActivity extends AppCompatActivity implements SongRecyclerView
                 if ( event == DISMISS_EVENT_TIMEOUT ) {
                     deleteSongFromSetlists(song.getId());
                     deleteSong(song.getId());
+                } else {
+                    setRemoving(false);
+                    setSongToRemove(null);
+                    dataset.clear();
+                    dataset.addAll(allSongs);
+                    adapter.notifyDataSetChanged();
                 }
 
             }

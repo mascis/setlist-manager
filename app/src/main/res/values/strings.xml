@@ -41,6 +41,7 @@
 
     <string name="common_saving">Saving...</string>
     <string name="common_saved">Saved</string>
+    <string name="common_deleting">Deleting...</string>
     <string name="common_deleted">deleted</string>
 
     <string name="button_save">Save</string>

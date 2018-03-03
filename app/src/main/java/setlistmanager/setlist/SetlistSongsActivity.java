@@ -91,6 +91,14 @@ public class SetlistSongsActivity extends AppCompatActivity implements SetlistSo
 
     private Toast reorderStatus;
 
+    private Toast removeStatus;
+
+    private Snackbar snackbar;
+
+    private boolean isRemoving;
+
+    private String songToRemove;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -141,6 +149,9 @@ public class SetlistSongsActivity extends AppCompatActivity implements SetlistSo
         itemTouchHelper = new ItemTouchHelper(callback);
         itemTouchHelper.attachToRecyclerView(recyclerView);
 
+        setRemoving(false);
+        setSongToRemove(null);
+
     }
 
     private void prepareActionBar( String setlistName ) {
@@ -178,6 +189,9 @@ public class SetlistSongsActivity extends AppCompatActivity implements SetlistSo
 
     private void prepareToastMessages() {
         reorderStatus = Toast.makeText(getApplicationContext(), getResources().getText(R.string.common_saving), Toast.LENGTH_SHORT);
+        removeStatus = Toast.makeText(getApplicationContext(), getResources().getText(R.string.common_deleting), Toast.LENGTH_SHORT);
+
+        snackbar = Snackbar.make(findViewById(android.R.id.content), "", Snackbar.LENGTH_LONG);
     }
 
     @Override
@@ -194,8 +208,22 @@ public class SetlistSongsActivity extends AppCompatActivity implements SetlistSo
 
     @Override
     protected void onStop() {
-        super.onStop();
-        disposable.clear();
+
+        if ( isRemoving() && getSongToRemove() != null) {
+
+            snackbar.dismiss();
+            removeSongFromSetlist(getSongToRemove());
+
+            super.onStop();
+            disposable.clear();
+
+        } else {
+
+            super.onStop();
+            disposable.clear();
+
+        }
+
     }
 
     @Override
@@ -215,6 +243,22 @@ public class SetlistSongsActivity extends AppCompatActivity implements SetlistSo
                         })
         );
 
+    }
+
+    public boolean isRemoving() {
+        return isRemoving;
+    }
+
+    public void setRemoving(boolean removing) {
+        isRemoving = removing;
+    }
+
+    public String getSongToRemove() {
+        return songToRemove;
+    }
+
+    public void setSongToRemove(String songToRemove) {
+        this.songToRemove = songToRemove;
     }
 
     private int getAdapterPosition() {
@@ -305,17 +349,44 @@ public class SetlistSongsActivity extends AppCompatActivity implements SetlistSo
 
     }
 
-    private void handleRemove(final Song song ) {
+    private void updateDataset( Song song ) {
+
+        List<Song> songs = new ArrayList<>();
+
+        for ( Song s : dataset ) {
+
+            if ( s.getId() != song.getId() ) {
+                songs.add(s);
+            }
+
+        }
+
+        dataset.clear();
+        dataset.addAll(songs);
+        adapter.notifyDataSetChanged();
+
+    }
+
+    private void handleRemove( final Song song ) {
+
+        setRemoving(true);
+        setSongToRemove(song.getId());
+
+        final List<Song> allSongs = new ArrayList<>();
+        allSongs.addAll(dataset);
+
+        updateDataset(song);
 
         String msg = createRemoveMessage(song);
-
-        final Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), msg, Snackbar.LENGTH_LONG);
+        snackbar.setText(msg);
 
         snackbar.setAction(R.string.undo, new View.OnClickListener() {
+
             @Override
             public void onClick(View view) {
                 snackbar.dismiss();
             }
+
         });
 
         snackbar.addCallback(new BaseTransientBottomBar.BaseCallback<Snackbar>() {
@@ -324,7 +395,17 @@ public class SetlistSongsActivity extends AppCompatActivity implements SetlistSo
             public void onDismissed(Snackbar transientBottomBar, int event) {
 
                 if ( event == DISMISS_EVENT_TIMEOUT ) {
+
                     removeSongFromSetlist(song.getId());
+
+                } else {
+
+                    setRemoving(false);
+                    setSongToRemove(null);
+                    dataset.clear();
+                    dataset.addAll(allSongs);
+                    adapter.notifyDataSetChanged();
+
                 }
 
             }
@@ -475,12 +556,18 @@ public class SetlistSongsActivity extends AppCompatActivity implements SetlistSo
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            removeStatus.setText(R.string.common_deleting);
+            removeStatus.show();
             dataset.clear();
         }
 
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
+            removeStatus.setText(R.string.song_deleted_successfully);
+            removeStatus.show();
+            setSongToRemove(null);
+            setRemoving(false);
             updateSongList();
         }
 

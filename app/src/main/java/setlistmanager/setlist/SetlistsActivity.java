@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -55,9 +56,13 @@ public class SetlistsActivity extends AppCompatActivity implements SetlistRecycl
 
     private List<Setlist> dataset;
 
-    //private ItemTouchHelper itemTouchHelper;
-
     private BottomNavigationView bottomNavigationView;
+
+    private Snackbar snackbar;
+
+    private boolean isRemoving;
+
+    private String setlistToRemove;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,7 +85,10 @@ public class SetlistsActivity extends AppCompatActivity implements SetlistRecycl
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
 
-        //registerForContextMenu(recyclerView);
+        snackbar = Snackbar.make(findViewById(android.R.id.content), "", Snackbar.LENGTH_LONG);
+
+        setRemoving(false);
+        setSetlistToRemove(null);
 
     }
 
@@ -145,8 +153,23 @@ public class SetlistsActivity extends AppCompatActivity implements SetlistRecycl
 
     @Override
     protected void onStop() {
-        super.onStop();
-        disposable.clear();
+
+        if ( isRemoving() && getSetlistToRemove() != null ) {
+
+            snackbar.dismiss();
+            deleteSetlist(getSetlistToRemove());
+
+            super.onStop();
+            disposable.clear();
+
+        } else {
+
+            super.onStop();
+            disposable.clear();
+
+        }
+
+
     }
 
     @Override
@@ -171,6 +194,22 @@ public class SetlistsActivity extends AppCompatActivity implements SetlistRecycl
 
         return super.onOptionsItemSelected(item);
 
+    }
+
+    public boolean isRemoving() {
+        return isRemoving;
+    }
+
+    public void setRemoving(boolean removing) {
+        isRemoving = removing;
+    }
+
+    public String getSetlistToRemove() {
+        return setlistToRemove;
+    }
+
+    public void setSetlistToRemove(String setlistToRemove) {
+        this.setlistToRemove = setlistToRemove;
     }
 
     private int getAdapterPosition() {
@@ -211,18 +250,6 @@ public class SetlistsActivity extends AppCompatActivity implements SetlistRecycl
 
     }
 
-    /*
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-
-        MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.setlist_context_menu, menu);
-
-        super.onCreateContextMenu(menu, v, menuInfo);
-
-    }
-    */
-
     @Override
     public boolean onContextItemSelected(MenuItem item) {
 
@@ -254,11 +281,34 @@ public class SetlistsActivity extends AppCompatActivity implements SetlistRecycl
 
     }
 
+    private void updateDataset( Setlist setlist ) {
+
+        List<Setlist> setlists = new ArrayList<>();
+
+        for ( Setlist s : dataset ) {
+
+            if ( s.getId() != setlist.getId() ) {
+                setlists.add(s);
+            }
+
+        }
+
+        dataset.clear();
+        dataset.addAll(setlists);
+        adapter.notifyDataSetChanged();
+
+    }
+
     private void handleRemove(final Setlist setlist ) {
 
         String msg = setlist.getName() + " " + getResources().getString(R.string.common_deleted);
 
-        final Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), msg, Snackbar.LENGTH_LONG);
+        final List<Setlist> allSetlists = new ArrayList<>();
+        allSetlists.addAll(dataset);
+
+        updateDataset(setlist);
+
+        snackbar.setText(msg);
 
         snackbar.setAction(R.string.undo, new View.OnClickListener() {
             @Override
@@ -273,7 +323,18 @@ public class SetlistsActivity extends AppCompatActivity implements SetlistRecycl
             public void onDismissed(Snackbar transientBottomBar, int event) {
 
                 if ( event == DISMISS_EVENT_TIMEOUT ) {
+
                     deleteSetlist(setlist.getId());
+
+                } else {
+
+                    setRemoving(false);
+                    setSetlistToRemove(null);
+
+                    dataset.clear();
+                    dataset.addAll(allSetlists);
+                    adapter.notifyDataSetChanged();
+
                 }
 
             }
