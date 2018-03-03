@@ -4,8 +4,12 @@ import android.app.DialogFragment;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BaseTransientBottomBar;
+import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -13,8 +17,11 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -51,7 +58,7 @@ import setlistmanager.helper.SimpleItemTouchHelperCallback;
 import setlistmanager.screenslide.ScreenSlideActivity;
 import setlistmanager.util.ConfirmDialogFragment;
 
-public class SetlistSongsActivity extends AppCompatActivity implements ConfirmDialogFragment.ConfirmDialogListener, SetlistSongsRecyclerViewAdapter.ItemClickListener, OnStartDragListener {
+public class SetlistSongsActivity extends AppCompatActivity implements SetlistSongsRecyclerViewAdapter.ItemClickListener, OnStartDragListener {
 
     private final String TAG = SetlistSongsActivity.class.getSimpleName();
 
@@ -89,6 +96,14 @@ public class SetlistSongsActivity extends AppCompatActivity implements ConfirmDi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setlist_songs);
 
+        Bundle extras = getIntent().getExtras();
+        setlistId = extras.getString(SETLIST_ID);
+        final String setlistName = extras.getString(SETLIST_NAME);
+
+        prepareActionBar(setlistName);
+        prepareFloatingActionButton(setlistName);
+        prepareToastMessages();
+
         viewModelFactory = Injection.provideViewModelFactory(this, this);
         setlistSongsViewModel = ViewModelProviders.of(this, viewModelFactory).get(SetlistSongsViewModel.class);
         setlistSongsNavigator = setlistSongsViewModel.getSetlistSongsNavigator();
@@ -119,15 +134,16 @@ public class SetlistSongsActivity extends AppCompatActivity implements ConfirmDi
             public void onItemDismiss(int position) {
 
             }
+
         };
 
         ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(itemTouchHelperAdapter);
         itemTouchHelper = new ItemTouchHelper(callback);
         itemTouchHelper.attachToRecyclerView(recyclerView);
 
-        Bundle extras = getIntent().getExtras();
-        setlistId = extras.getString(SETLIST_ID);
-        final String setlistName = extras.getString(SETLIST_NAME);
+    }
+
+    private void prepareActionBar( String setlistName ) {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -140,6 +156,10 @@ public class SetlistSongsActivity extends AppCompatActivity implements ConfirmDi
 
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setHomeButtonEnabled(true);
+
+    }
+
+    private void prepareFloatingActionButton( final String setlistName ) {
 
         floatingActionButton = (FloatingActionButton) findViewById(R.id.fab_add);
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
@@ -154,8 +174,10 @@ public class SetlistSongsActivity extends AppCompatActivity implements ConfirmDi
             }
         });
 
-        reorderStatus = Toast.makeText(getApplicationContext(), getResources().getText(R.string.common_saving), Toast.LENGTH_SHORT);
+    }
 
+    private void prepareToastMessages() {
+        reorderStatus = Toast.makeText(getApplicationContext(), getResources().getText(R.string.common_saving), Toast.LENGTH_SHORT);
     }
 
     @Override
@@ -256,7 +278,7 @@ public class SetlistSongsActivity extends AppCompatActivity implements ConfirmDi
                 return true;
 
             case R.id.remove:
-                showConfirmDialog(song);
+                handleRemove(song);
                 return true;
 
             default:
@@ -265,38 +287,54 @@ public class SetlistSongsActivity extends AppCompatActivity implements ConfirmDi
 
     }
 
-    public void showConfirmDialog(Song song) {
+    private String createRemoveMessage(Song song) {
 
-        String title = getResources().getString(R.string.confirm_dialog_delete_song_title);
-        String question = getResources().getString(R.string.confirm_dialog_delete_song_message);
-        String songTitle = song.getTitle();
-        String message = question + " " + songTitle + "?";
+        String msg = "";
 
-        DialogFragment confirmDialog = ConfirmDialogFragment.instance(title, message);
-        confirmDialog.show(getFragmentManager(), "ConfirmDialog");
+        if ( song.getArtist() != null && !song.getArtist().isEmpty() ) {
 
-    }
+            msg = song.getArtist() + " - " + song.getTitle() + " " + getResources().getString(R.string.common_deleted);
 
-    @Override
-    public void onDialogPositiveClick(DialogFragment dialog) {
+        } else {
 
-        Song song;
+            msg = song.getTitle() + " " + getResources().getString(R.string.common_deleted);
 
-        try {
-            song = dataset.get(getAdapterPosition());
-            removeSongFromSetlist(song.getId());
-        } catch (Exception e) {
-            Log.e(TAG, "Deleting song failed");
         }
 
-    }
-
-    @Override
-    public void onDialogNegativeClick(DialogFragment dialog) {
-
-        dialog.dismiss();
+        return msg;
 
     }
+
+    private void handleRemove(final Song song ) {
+
+        String msg = createRemoveMessage(song);
+
+        final Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), msg, Snackbar.LENGTH_LONG);
+
+        snackbar.setAction(R.string.undo, new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                snackbar.dismiss();
+            }
+        });
+
+        snackbar.addCallback(new BaseTransientBottomBar.BaseCallback<Snackbar>() {
+
+            @Override
+            public void onDismissed(Snackbar transientBottomBar, int event) {
+
+                if ( event == DISMISS_EVENT_TIMEOUT ) {
+                    removeSongFromSetlist(song.getId());
+                }
+
+            }
+
+        });
+
+        snackbar.show();
+
+    }
+
 
     private void removeSongFromSetlist( String songId ) {
 

@@ -17,7 +17,8 @@
         android:layout_marginRight="8dp"
         android:layout_marginEnd="8dp"
         android:drawableStart="@drawable/ic_drag_handle_black_24dp"
-        android:drawableLeft="@drawable/ic_drag_handle_black_24dp"/>
+        android:drawableLeft="@drawable/ic_drag_handle_black_24dp"
+        android:longClickable="false"/>
 
     <TextView
         android:id="@+id/songs_list_item_title"

@@ -3,6 +3,7 @@ package setlistmanager.setlist;
 import android.content.Context;
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -46,7 +47,6 @@ public class SetlistSongsRecyclerViewAdapter extends RecyclerView.Adapter<Setlis
 
     }
 
-
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
@@ -77,7 +77,7 @@ public class SetlistSongsRecyclerViewAdapter extends RecyclerView.Adapter<Setlis
         holder.options.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                setPosition(position);
+                setPosition(holder.getLayoutPosition());
                 view.showContextMenu();
             }
         });
@@ -92,6 +92,7 @@ public class SetlistSongsRecyclerViewAdapter extends RecyclerView.Adapter<Setlis
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
+
                 setPosition(holder.getLayoutPosition());
                 return false;
             }
@@ -123,6 +124,8 @@ public class SetlistSongsRecyclerViewAdapter extends RecyclerView.Adapter<Setlis
     @Override
     public void onViewRecycled(ViewHolder holder) {
         holder.itemView.setOnLongClickListener(null);
+        holder.itemView.setOnClickListener(null);
+        holder.dragHandle.setOnTouchListener(null);
         super.onViewRecycled(holder);
     }
 
@@ -152,11 +155,13 @@ public class SetlistSongsRecyclerViewAdapter extends RecyclerView.Adapter<Setlis
 
         @Override
         public void onItemSelected() {
+            itemView.setLongClickable(false);
             itemView.setBackgroundColor(Color.LTGRAY);
         }
 
         @Override
         public void onItemClear() {
+            itemView.setLongClickable(true);
             itemView.setBackgroundColor(0);
         }
 
