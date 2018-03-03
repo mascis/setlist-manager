@@ -163,6 +163,8 @@ public class SetlistSongsRecyclerViewAdapter extends RecyclerView.Adapter<Setlis
         public void onItemClear() {
             itemView.setLongClickable(true);
             itemView.setBackgroundColor(0);
+            itemView.setBackgroundResource(R.drawable.list_item_divider);
+
         }
 
         @Override

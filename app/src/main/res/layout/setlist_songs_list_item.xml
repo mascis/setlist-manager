@@ -16,21 +16,24 @@
         android:layout_height="wrap_content"
         android:layout_marginRight="8dp"
         android:layout_marginEnd="8dp"
-        android:drawableStart="@drawable/ic_drag_handle_black_24dp"
-        android:drawableLeft="@drawable/ic_drag_handle_black_24dp"
-        android:longClickable="false"/>
+        android:drawableStart="@drawable/ic_reorder_black_24dp"
+        android:drawableLeft="@drawable/ic_reorder_black_24dp" />
 
     <TextView
         android:id="@+id/songs_list_item_title"
         android:layout_width="0dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginEnd="8dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1" />
+        android:layout_weight="1"
+        android:singleLine="true"/>
 
     <TextView
         android:id="@+id/songs_list_item_artist"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1" />
+        android:layout_weight="1"
+        android:singleLine="true"/>
 
     <TextView
         android:id="@+id/options_icon"
@@ -39,6 +42,5 @@
         android:layout_weight="1"
         android:drawableEnd="@drawable/ic_more_vert_black_24dp"
         android:drawableRight="@drawable/ic_more_vert_black_24dp"/>
-
 
 </LinearLayout>
