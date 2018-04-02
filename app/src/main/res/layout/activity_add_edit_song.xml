@@ -14,6 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
+        android:padding="10dp"
         android:fillViewport="true">
 
         <LinearLayout
@@ -36,7 +37,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:inputType="textPersonName" />
+                android:inputType="textPersonName"
+                android:background="@drawable/edit_text_border_normal"
+                />
 
             <TextView
                 android:id="@+id/label_artist"
@@ -49,7 +52,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:inputType="textPersonName" />
+                android:inputType="textPersonName"
+                android:background="@drawable/edit_text_border_normal"/>
 
             <TextView
                 android:id="@+id/song_file"

@@ -3,10 +3,8 @@ package setlistmanager.song;
 import android.app.Activity;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -17,8 +15,6 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.setlistmanager.R;
-
-import java.util.Date;
 
 import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -31,6 +27,7 @@ import setlistmanager.Injection;
 import setlistmanager.ViewModelFactory;
 import setlistmanager.data.Song;
 import setlistmanager.util.FileUtil;
+import setlistmanager.util.Theme;
 
 public class AddEditSongActivity extends AppCompatActivity {
 
@@ -187,6 +184,42 @@ public class AddEditSongActivity extends AppCompatActivity {
         return true;
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        title = (EditText) findViewById(R.id.song_title);
+        artist = (EditText)findViewById(R.id.song_artist);
+
+        title.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                if ( b ) {
+
+                    Theme.setEditTextBorderFocus(view);
+
+                } else {
+
+                    Theme.setEditTextBorderNormal(view);
+                }
+            }
+        });
+
+        artist.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                if ( b ) {
+
+                    Theme.setEditTextBorderFocus(view);
+
+                } else {
+
+                    Theme.setEditTextBorderNormal(view);
+                }
+            }
+        });
+
+    }
 
     @Override
     protected void onStop() {

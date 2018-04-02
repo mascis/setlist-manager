@@ -30,6 +30,7 @@ import io.reactivex.schedulers.Schedulers;
 import setlistmanager.Injection;
 import setlistmanager.ViewModelFactory;
 import setlistmanager.data.Setlist;
+import setlistmanager.util.Theme;
 
 public class AddEditSetlistActivity extends AppCompatActivity {
 
@@ -121,6 +122,34 @@ public class AddEditSetlistActivity extends AppCompatActivity {
     public boolean onSupportNavigateUp() {
         onBackPressed();
         return true;
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        setlistName.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                if ( b ) {
+                    Theme.setEditTextBorderFocus(view);
+                } else {
+                    Theme.setEditTextBorderNormal(view);
+                }
+            }
+        });
+
+        setlistLocation.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                if ( b ) {
+                    Theme.setEditTextBorderFocus(view);
+                } else {
+                    Theme.setEditTextBorderNormal(view);
+                }
+            }
+        });
+
     }
 
     @Override
