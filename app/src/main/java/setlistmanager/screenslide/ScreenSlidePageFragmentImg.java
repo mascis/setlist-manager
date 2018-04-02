@@ -69,7 +69,7 @@ public class ScreenSlidePageFragmentImg extends Fragment {
                 if ( motionEvent.getAction() == MotionEvent.ACTION_DOWN ) {
 
                     exitIcon.setVisibility(View.VISIBLE);
-                    handler.postDelayed(runnable, 5000);
+                    handler.postDelayed(runnable, 3000);
 
                 }
 

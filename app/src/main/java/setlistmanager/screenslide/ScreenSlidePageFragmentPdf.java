@@ -72,7 +72,7 @@ public class ScreenSlidePageFragmentPdf extends Fragment {
             public boolean onTap(MotionEvent e) {
 
                 exitIcon.setVisibility(View.VISIBLE);
-                handler.postDelayed(runnable, 5000);
+                handler.postDelayed(runnable, 3000);
 
                 return true;
 
