@@ -1,5 +1,9 @@
 package setlistmanager.song;
 
+import android.app.Activity;
+import android.os.Bundle;
+
+import setlistmanager.screenslide.ScreenSlideActivity;
 import setlistmanager.util.BaseNavigator;
 
 /**

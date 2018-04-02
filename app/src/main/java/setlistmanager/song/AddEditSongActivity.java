@@ -2,9 +2,11 @@ package setlistmanager.song;
 
 import android.app.Activity;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -12,9 +14,13 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.setlistmanager.R;
+
+import java.io.File;
+import java.io.Serializable;
 
 import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -26,6 +32,7 @@ import io.reactivex.schedulers.Schedulers;
 import setlistmanager.Injection;
 import setlistmanager.ViewModelFactory;
 import setlistmanager.data.Song;
+import setlistmanager.screenslide.ScreenSlideActivity;
 import setlistmanager.util.FileUtil;
 import setlistmanager.util.Theme;
 
@@ -51,7 +58,7 @@ public class AddEditSongActivity extends AppCompatActivity {
 
     private EditText artist;
 
-    private EditText filepath;
+    //private TextView filepath;
 
     private String songUri;
 
@@ -72,6 +79,8 @@ public class AddEditSongActivity extends AppCompatActivity {
     private String songId;
 
     private Song song;
+
+    private RelativeLayout thumbnail;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,10 +113,11 @@ public class AddEditSongActivity extends AppCompatActivity {
 
         title = (EditText) findViewById(R.id.song_title);
         artist = (EditText) findViewById(R.id.song_artist);
-        filepath = (EditText) findViewById(R.id.song_file_path);
+        //filepath = (TextView) findViewById(R.id.song_file_path);
         selectFileButton = (Button) findViewById(R.id.button_select_file);
         saveButton = (Button) findViewById(R.id.button_save);
         cancelButton = (Button) findViewById(R.id.button_cancel);
+        createPlaceholderThumbnail();
 
         toastSaveFailed = Toast.makeText(getApplicationContext(), getResources().getText(R.string.addedit_save_failed), Toast.LENGTH_LONG);
         toastSaveError = Toast.makeText(getApplicationContext(), getResources().getText(R.string.addedit_save_error), Toast.LENGTH_LONG);
@@ -150,6 +160,41 @@ public class AddEditSongActivity extends AppCompatActivity {
 
     }
 
+    public void createPlaceholderThumbnail() {
+
+        Fragment placeholder = ThumbnailFragmentPlaceholder.newInstance();
+        android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
+        android.support.v4.app.FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.thumbnail, placeholder);
+        fragmentTransaction.commitAllowingStateLoss();
+
+    }
+
+    public void createThumbnail(Context context, Uri uri) {
+
+        Fragment fragment = null;
+
+        if ( FileUtil.isImage(context, uri) ) {
+
+            fragment = ThumbnailFragmentImg.newInstance(context, uri.toString());
+
+        } else if ( FileUtil.isPdf(context, uri) ) {
+
+            fragment = ThumbnailFragmentPdf.newInstance(context, uri.toString());
+
+        } else if (FileUtil.isPlainText(context, uri) ) {
+
+            fragment = ThumbnailFragmentTxt.newInstance(context, uri);
+
+        }
+
+        android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
+        android.support.v4.app.FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.thumbnail, fragment);
+        fragmentTransaction.commitAllowingStateLoss();
+
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent resultData) {
 
@@ -171,8 +216,10 @@ public class AddEditSongActivity extends AppCompatActivity {
 
                 songUri = uri.toString();
 
-                String path = FileUtil.getPathFromUri(getApplicationContext(), uri);
-                filepath.setText(path);
+                createThumbnail(getApplicationContext(), uri);
+
+                //String path = FileUtil.getPathFromUri(getApplicationContext(), uri);
+                //filepath.setText(path);
 
             }
         }
@@ -235,9 +282,16 @@ public class AddEditSongActivity extends AppCompatActivity {
 
         String songTitle = title.getText().toString();
         String songArtist = artist.getText().toString();
-        String songFilepath = filepath.getText().toString();
+        //String songFilepath = filepath.getText().toString();
 
+        /*
         if ( songTitle == null || songTitle.isEmpty() || songFilepath == null || songFilepath.isEmpty() ) {
+            toastSaveFailed.show();
+            return;
+        }
+        */
+
+        if ( songTitle == null || songTitle.isEmpty() || songUri == null || songUri.isEmpty() ) {
             toastSaveFailed.show();
             return;
         }
@@ -277,8 +331,8 @@ public class AddEditSongActivity extends AppCompatActivity {
                                 if( song.getUri() != null ) {
 
                                     songUri = song.getUri();
-                                    String path = FileUtil.getPathFromUri(getApplicationContext(), Uri.parse( song.getUri()));
-                                    filepath.setText( path );
+                                    //String path = FileUtil.getPathFromUri(getApplicationContext(), Uri.parse( song.getUri()));
+                                    //filepath.setText( path );
 
                                 }
 

@@ -4,7 +4,7 @@
     <string name="setlists_title">Setlists</string>
     <string name="add_setlist_title">Add setlist</string>
     <string name="edit_setlist_title">Edit setlist</string>
-    <string name="setlist_name">Name</string>
+    <string name="setlist_name">Name*</string>
     <string name="setlist_date">Date</string>
     <string name="addedit_setlist_name_cannot_be_emtpy">Name cannot be empty.</string>
     <string name="addedit_setlist_save_error">Could not save the setlist. Please try again.</string>
@@ -29,13 +29,13 @@
     <string name="songs_title">Songs</string>
     <string name="add_song_title">Add song</string>
     <string name="edit_song_title">Edit song</string>
-    <string name="addedit_save_failed">Save failed. Check title and filepath.</string>
+    <string name="addedit_save_failed">Save failed. Check title and file.</string>
     <string name="addedit_song_title_cannot_be_emtpy">Title cannot be empty.</string>
     <string name="addedit_save_error">Could not save the song. Please try again.</string>
     <string name="addedit_fetch_error">Could not get the data for the requested song.</string>
-    <string name="song_title">Title</string>
+    <string name="song_title">Title*</string>
     <string name="song_artist">Artist</string>
-    <string name="song_file">File</string>
+    <string name="song_file">File*</string>
 
     <string name="settings_title">Settings</string>
 
@@ -47,7 +47,7 @@
     <string name="button_save">Save</string>
     <string name="button_OK">OK</string>
     <string name="button_cancel">Cancel</string>
-    <string name="button_select_file">Select file</string>
+    <string name="button_select_file">Select</string>
 
     <string name="menu_item_add">Add</string>
     <string name="menu_item_nav">MENU</string>
