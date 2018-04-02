@@ -188,6 +188,11 @@ public class AddEditSongActivity extends AppCompatActivity {
 
         }
 
+        if ( fragment == null ) {
+            Log.e(TAG, "Could not create thumbnail fragment. Fragment is null.");
+            return;
+        }
+
         android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
         android.support.v4.app.FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.thumbnail, fragment);
@@ -217,9 +222,6 @@ public class AddEditSongActivity extends AppCompatActivity {
                 songUri = uri.toString();
 
                 createThumbnail(getApplicationContext(), uri);
-
-                //String path = FileUtil.getPathFromUri(getApplicationContext(), uri);
-                //filepath.setText(path);
 
             }
         }

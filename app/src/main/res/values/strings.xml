@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">Setlist Manager</string>
 
+    <string name="permissions_denied">Without the required permissions the app will not work properly.</string>
+
     <string name="setlists_title">Setlists</string>
     <string name="add_setlist_title">Add setlist</string>
     <string name="edit_setlist_title">Edit setlist</string>

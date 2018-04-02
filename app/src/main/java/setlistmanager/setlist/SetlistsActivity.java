@@ -1,12 +1,15 @@
 package setlistmanager.setlist;
 
+import android.Manifest;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BaseTransientBottomBar;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -18,6 +21,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.setlistmanager.R;
 
@@ -35,6 +39,7 @@ import io.reactivex.schedulers.Schedulers;
 import setlistmanager.Injection;
 import setlistmanager.ViewModelFactory;
 import setlistmanager.data.Setlist;
+import setlistmanager.util.FileUtil;
 
 public class SetlistsActivity extends AppCompatActivity implements SetlistRecyclerViewAdapter.SetlistItemClickListener {
 
@@ -64,11 +69,15 @@ public class SetlistsActivity extends AppCompatActivity implements SetlistRecycl
 
     private String setlistToRemove;
 
+    private Toast toastPermissionsDenied;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setlists);
+
+        checkPermissions();
 
         prepareActionBar();
         prepareFloatingActionButton();
@@ -87,8 +96,59 @@ public class SetlistsActivity extends AppCompatActivity implements SetlistRecycl
 
         snackbar = Snackbar.make(findViewById(android.R.id.content), "", Snackbar.LENGTH_LONG);
 
+        toastPermissionsDenied = Toast.makeText(getApplicationContext(), R.string.permissions_denied, Toast.LENGTH_LONG);
+
         setRemoving(false);
         setSetlistToRemove(null);
+
+    }
+
+    private void checkPermissions() {
+
+        if ( FileUtil.isExternalStorageReadable() ) {
+
+            if ( !FileUtil.hasPermissionToWriteExternalStorage(this) ) {
+
+                Log.i(TAG, "No permission to write external storage. Requesting permission...");
+
+                try {
+
+                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, FileUtil.PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
+
+                } catch (Exception e) {
+
+                    e.printStackTrace();
+                    throw e;
+
+                }
+
+            }
+
+        } else {
+
+            Log.i(TAG, "External storage not readable");
+
+        }
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+
+        switch (requestCode) {
+
+            case FileUtil.PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE: {
+
+                if (grantResults.length <= 0 || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+
+                    toastPermissionsDenied.show();
+
+                }
+
+                return;
+            }
+
+        }
 
     }
 
