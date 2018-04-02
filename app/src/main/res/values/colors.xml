@@ -2,11 +2,14 @@
 <resources>
     <color type="color" name="colorPrimary">#2F74AB</color>
     <color type="color" name="colorSecondary">#44A8F7</color>
-    <color type="color" name="colorActive">#5044A8F7</color>
+    <color type="color" name="colorGray">#BDBDBD</color>
+    <color type="color" name="colorActive">#95E8E8E8</color>
+
+
 
     <color type="color" name="colorGreen">#37C568</color>
     <color type="color" name="colorRed">#F8625D</color>
-
     <color type="color" name="colorAccent">#BCBABE</color>
     <color type="color" name="colorPrimaryDark">#BCBABE</color>
+
 </resources>
